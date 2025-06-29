@@ -1,8 +1,3 @@
-Here’s a complete, professional `README.md` file for your **ATROP GitHub repository**, tailored for vendor, community, and researcher audiences:
-
----
-
-````markdown
 # ATROP – Autonomous Topology-Optimized Routing Protocol
 
 > ⚙️ AI-Native | 🧠 ML-Augmented | 🛰 Topology-Aware | 🔐 Zero-Trust Secure | 🧩 Protocol-Independent
@@ -11,33 +6,23 @@ ATROP is a **conceptual next-generation routing protocol** designed to transform
 
 This repository serves as the **reference structure**, **SDK seed**, and **community collaboration point** for ATROP protocol development, simulation, and eventual standardization.
 
----
-
 ## 🔍 Key Features
 
-- 🧠 **AI-Driven Control Plane**  
-  Uses Graph Neural Networks (GNN) and Reinforcement Learning to dynamically compute routes based on topology, traffic, and service intent.
+- 🧠 **AI-Driven Control Plane**: Uses Graph Neural Networks (GNN) and Reinforcement Learning to dynamically compute routes based on topology, traffic, and service intent.
 
-- ⚡ **ML-Augmented Data Plane**  
-  Inline ML models classify, reroute, and optimize flows in real time using feedback mechanisms.
+- ⚡ **ML-Augmented Data Plane**: Inline ML models classify, reroute, and optimize flows in real time using feedback mechanisms.
 
-- 🗺 **Autonomous Topology Zones (ATZ)**  
-  Supports hierarchical, zone-based learning and decision logic for scalable deployments.
+- 🗺 **Autonomous Topology Zones (ATZ)**: Supports hierarchical, zone-based learning and decision logic for scalable deployments.
 
-- 🔐 **Built-in Security & Trust Model**  
-  Enforces zero-trust adjacency, cryptographic identity vectors (NIV), and per-hop validation.
+- 🔐 **Built-in Security & Trust Model**: Enforces zero-trust adjacency, cryptographic identity vectors (NIV), and per-hop validation.
 
-- 🔄 **Full Interoperability**  
-  Compatible with OSPF, BGP, IS-IS, MPLS, Segment Routing, VXLAN, SRv6, and more — via dynamic interoperability modules.
+- 🔄 **Full Interoperability**: Compatible with RIP, EIGRP, OSPF, BGP, IS-IS, MPLS, Segment Routing, VXLAN, SRv6, and more — via dynamic interoperability modules.
 
-- 🧪 **Vendor-Ready Architecture**  
-  Designed for native integration into Cisco, Juniper, Arista, Huawei, and open-source stacks (e.g., FRR, SONiC).
+- 🧪 **Vendor-Ready Architecture**: Designed for native integration into Cisco, Juniper, Arista, Huawei, and open-source stacks (e.g., FRR, SONiC).
 
----
 
 ## 📁 Repository Layout
 
-```plaintext
 ├── specs/           # Protocol specs: headers, FSMs, AI/ML logic
 ├── sdk/             # SDKs for Python, C++, gRPC, YANG, telemetry
 ├── daemon/          # Modular control/data plane agents
@@ -47,7 +32,6 @@ This repository serves as the **reference structure**, **SDK seed**, and **commu
 ├── tools/           # Utilities: visualizers, model validators
 ├── docs/            # Whitepapers, architecture, diagrams, standards
 └── .github/         # Issue templates and CI/CD workflow
-````
 
 ---
 
@@ -57,20 +41,20 @@ This repository serves as the **reference structure**, **SDK seed**, and **commu
 
 1. Clone the repository:
 
-   ```bash
+   ```
    git clone https://github.com/yourname/atrop-protocol.git
    cd atrop-protocol
    ```
 
 2. Browse sample agents, topologies, and SDK:
 
-   ```bash
+   ```
    cd examples/mininet-topologies/
    ```
 
 3. Run initial simulations (via Mininet or Ubuntu):
 
-   ```bash
+   ```
    sudo ./run_simulation.sh
    ```
 
@@ -92,8 +76,8 @@ Dual-licensed under:
 
 We welcome researchers, vendors, developers, and protocol designers to help shape ATROP. You can:
 
-* 💡 Submit ideas via [Issues](https://github.com/yourname/atrop-protocol/issues)
-* 📬 Propose features or diagrams via [Pull Requests](https://github.com/yourname/atrop-protocol/pulls)
+* 💡 Submit ideas via [Issues](https://github.com/Mahmoudtawfeekie2024/atrop-protocol/issues)
+* 📬 Propose features or diagrams via [Pull Requests](https://github.com/Mahmoudtawfeekie2024/atrop-protocolpulls)
 * 💬 Join the discussions (GitHub Discussions tab)
 * 📄 Review design specs under `/docs/`
 
@@ -121,8 +105,8 @@ We welcome researchers, vendors, developers, and protocol designers to help shap
 ## 📣 Contact
 
 **Lead Author**: Mahmoud Tawfeek
-📧 \[Email or GitHub contact link here]
-🔗 \[LinkedIn or personal page if applicable]
+📧 mahmoud.m.tawfeek@gmail.com,mahmoudtawfeek.ie2024@gmail.com
+🔗 https://www.linkedin.com/in/mahmoud-tawfeek-5a790b363/
 
 > *“Where Atropos chose the fate of mortals, ATROP chooses the fate of data.”*
 
