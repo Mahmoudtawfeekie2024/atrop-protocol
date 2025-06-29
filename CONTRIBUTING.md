@@ -27,7 +27,7 @@ This is a **design-stage protocol**, so contributions are **not limited to code*
 ### 1. 📂 Fork This Repository
 Create your own copy to propose changes:
 ```
-git clone https://github.com/your-username/atrop-protocol.git
+git clone https://github.com/Mahmoudtawfeekie2024/atrop-protocol.git
 ```
 
 ### 2. 🛠 Work in a New Branch
