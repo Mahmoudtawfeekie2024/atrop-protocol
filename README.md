@@ -105,7 +105,9 @@ We welcome researchers, vendors, developers, and protocol designers to help shap
 ## 📣 Contact
 
 **Lead Author**: Mahmoud Tawfeek
+
 📧 mahmoud.m.tawfeek@gmail.com,mahmoudtawfeek.ie2024@gmail.com
+
 🔗 https://www.linkedin.com/in/mahmoud-tawfeek-5a790b363/
 
 > *“Where Atropos chose the fate of mortals, ATROP chooses the fate of data.”*
