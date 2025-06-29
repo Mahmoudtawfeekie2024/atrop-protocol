@@ -77,7 +77,7 @@ Dual-licensed under:
 We welcome researchers, vendors, developers, and protocol designers to help shape ATROP. You can:
 
 * 💡 Submit ideas via [Issues](https://github.com/Mahmoudtawfeekie2024/atrop-protocol/issues)
-* 📬 Propose features or diagrams via [Pull Requests](https://github.com/Mahmoudtawfeekie2024/atrop-protocolpulls)
+* 📬 Propose features or diagrams via [Pull Requests](https://github.com/Mahmoudtawfeekie2024/atrop-protocol/pulls)
 * 💬 Join the discussions (GitHub Discussions tab)
 * 📄 Review design specs under `/docs/`
 
