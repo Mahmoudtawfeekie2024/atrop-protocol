@@ -22,7 +22,7 @@ This repository serves as the **reference structure**, **SDK seed**, and **commu
 
 
 ## 📁 Repository Layout
-
+```
 ├── specs/           # Protocol specs: headers, FSMs, AI/ML logic
 ├── sdk/             # SDKs for Python, C++, gRPC, YANG, telemetry
 ├── daemon/          # Modular control/data plane agents
@@ -32,7 +32,7 @@ This repository serves as the **reference structure**, **SDK seed**, and **commu
 ├── tools/           # Utilities: visualizers, model validators
 ├── docs/            # Whitepapers, architecture, diagrams, standards
 └── .github/         # Issue templates and CI/CD workflow
-
+```
 ---
 
 ## 🧪 Getting Started
