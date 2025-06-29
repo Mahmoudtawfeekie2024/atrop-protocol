@@ -1,3 +1,34 @@
-# License
+Copyright © 2025 Mahmoud Tawfeek. All Rights Reserved.
 
-This is the `LICENSE` for the ATROP project.
+This repository contains original design work, specifications, architecture concepts, and research drafts
+for the ATROP (Autonomous Topology-Optimized Routing Protocol).
+
+ATROP is a conceptual protocol framework developed independently by Mahmoud Tawfeek
+on 25 June 2025. It is not an implementation, standard, or production software.
+
+All content in this repository — including diagrams, models, pseudocode, architectural descriptions,
+and AI/ML-based routing constructs — is the intellectual property of the author.
+
+Unauthorized reproduction, commercial use, protocol rebranding, or integration into vendor platforms
+(Cisco, Juniper, Arista, Huawei, etc.) is strictly prohibited without prior written consent.
+
+You may:
+- Fork, read, and contribute ideas for educational or non-commercial research purposes
+- Reference ATROP in academic work or research with appropriate attribution
+- Propose collaboration via GitHub or by contacting the author directly
+
+You may not:
+- Use ATROP designs in commercial products or services
+- Claim ATROP or derivatives as standardized protocols or vendor IP
+- Distribute modified versions without attribution and context
+
+ATROP is intended to be submitted for community review (IETF/IEEE), but is not yet a standard.
+
+For licensing, partnership, or adoption inquiries, contact:
+Mahmoud Tawfeek 
+mahmoud.m.tawfeek@gmail.com
+mahmoudtawfeek.ie2024@gmail.com
+Network Development Engineer  
+📍 Dublin, Ireland  
+📞 +353-87-0300-568
+LinkedIn: https://www.linkedin.com/in/mahmoud-tawfeek-5a790b363/
