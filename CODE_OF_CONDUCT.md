@@ -1,4 +1,4 @@
-# Contributor Code of Conduct
+# Code of Conduct
 
 ## 🌐 Welcome to ATROP
 
