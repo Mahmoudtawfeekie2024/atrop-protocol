@@ -14,7 +14,7 @@ DATA_PLANE_BIN := $(BUILD_DIR)/data_plane
 IPC_BIN := $(BUILD_DIR)/ipc
 
 # Default build target
-all: $(CONTROL_PLANE_BIN) $(DATA_PLANE_BIN) $(IPC_BIN)
+all: $(CONTROL_PLANE_BIN) $(DATA_PLANE_BIN) $(IPC_BIN) $(SDK_CPP_BIN)
 
 # Build rules for each binary
 $(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp | $(BUILD_DIR)
@@ -42,9 +42,6 @@ SDK_CPP_DIR := sdk/c++
 SDK_CPP_SRC := $(wildcard $(SDK_CPP_DIR)/*.cpp)
 SDK_CPP_OBJ := $(patsubst $(SDK_CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SDK_CPP_SRC))
 SDK_CPP_BIN := $(BUILD_DIR)/sdk_cpp_demo
-
-# Add SDK binary to default build
-all: $(SDK_CPP_BIN)
 
 # Compile object files
 $(BUILD_DIR)/%.o: $(SDK_CPP_DIR)/%.cpp | $(BUILD_DIR)
@@ -90,16 +87,21 @@ test-python:
 	@echo "🧪 Running Python tests in $(PYTHON_TEST_DIR)..."
 	python -m pytest $(PYTHON_TEST_DIR)
 
-# === C++ Unit Testing ===
+# ==== C++ Unit Tests ====
 
 GTEST_SRC := test/unit/c++/test_main.cpp test/unit/c++/test_sdk.cpp
-GTEST_BIN := build/test_cpp
+GTEST_BIN := $(BUILD_DIR)/test_cpp
 
 test-cpp: $(GTEST_BIN)
 	@echo "🧪 Running C++ unit tests..."
 	./$(GTEST_BIN)
 
 $(GTEST_BIN): $(GTEST_SRC)
+	$(CXX) $(CXXFLAGS) -lgtest -lgtest_main -pthread $^ -o $@
+
+# ===== Unified Test Target (Python + C++) =====
+
+test: test-python test-cpp
 
 # ================================
 # 🔍 Tool Version Checks
@@ -122,6 +124,4 @@ check-versions:
 	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | \
 		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
 
-	$(CXX) $(CXXFLAGS) -lgtest -lgtest_main -pthread $^ -o $@
-
-.PHONY: test-cpp
+.PHONY: generate-grpc-stubs test-python test-cpp test clean all
