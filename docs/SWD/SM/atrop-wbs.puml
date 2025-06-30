@@ -1,0 +1,13 @@
+@startwbs
+* ATROP Roadmap
+** Sprint 1: Base Infra Setup
+** Sprint 2: Protocol FSM Core
+** Sprint 3: ATZ + Policy FSM
+** Sprint 4: AI Control Plane (I)
+** Sprint 5: AI Control Plane (II)
+** Sprint 6: ML Data Plane (I)
+** Sprint 7: ML Data Plane (II)
+** Sprint 8: IPC + Lifecycle
+** Sprint 9: Integration (Mininet + FRR)
+** Sprint 10: SDK + Telemetry API
+@endwbs
