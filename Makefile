@@ -100,6 +100,28 @@ test-cpp: $(GTEST_BIN)
 	./$(GTEST_BIN)
 
 $(GTEST_BIN): $(GTEST_SRC)
+
+# ================================
+# 🔍 Tool Version Checks
+# ================================
+
+MIN_GPP_VER = 9
+MIN_PYTHON_VER = 3.8
+MIN_PROTOC_VER = 3.15
+
+check-versions:
+	@echo "🔍 Checking toolchain versions..."
+
+	@python3 -c 'import sys; assert sys.version_info >= tuple(map(int, "$(MIN_PYTHON_VER)".split("."))), \
+		f"❌ Python >= $(MIN_PYTHON_VER) required, found: {sys.version}"' && \
+		echo "✅ Python version OK"
+
+	@$(CXX) --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+' | \
+		awk '{ if ($$1 < $(MIN_GPP_VER)) { print "❌ g++ >= $(MIN_GPP_VER) required, found: "$$1; exit 1 } else { print "✅ g++ version OK" }}'
+
+	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | \
+		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
+
 	$(CXX) $(CXXFLAGS) -lgtest -lgtest_main -pthread $^ -o $@
 
 .PHONY: test-cpp
