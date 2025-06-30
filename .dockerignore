@@ -1,0 +1,41 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+
+# Ignore build artifacts
+build/
+*.o
+*.out
+*.so
+*.a
+
+# Ignore test results
+*.log
+*.coverage
+coverage/
+htmlcov/
+.mypy_cache/
+.tox/
+.cache/
+
+# Ignore gRPC stub output
+sdk/grpc/build_py/
+sdk/grpc/build_cpp/
+
+# Ignore environment files
+.env
+*.swp
+.venv/
+*.egg-info/
+
+# Ignore dev tools
+.vscode/
+.idea/
+
+# Ignore OS/system files
+.DS_Store
+Thumbs.db
+
+# Git metadata
+.git/
+.gitignore
