@@ -88,4 +88,4 @@ PYTHON_TEST_DIR := test/unit
 
 test-python:
 	@echo "🧪 Running Python tests in $(PYTHON_TEST_DIR)..."
-	python3 -m pytest $(PYTHON_TEST_DIR)
+	python -m pytest $(PYTHON_TEST_DIR)
