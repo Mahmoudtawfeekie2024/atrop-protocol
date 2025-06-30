@@ -1,8 +1,8 @@
 # 🧪 ATROP Test Strategy
 
-**Document Version:** 0.1  
+**Document Version:** 0.2  
 **Maintainer:** Test Architect  
-**Last Updated:** 25 June 2025  
+**Last Updated:** 30 June 2025  
 **Applies To:** Foundational protocol components during initial implementation
 
 ---
@@ -46,6 +46,17 @@ This strategy supports incremental validation of ATROP’s unique autonomous beh
 
 ---
 
+## 📂 Test Command Matrix
+
+| Layer             | Command                                | Tool         |
+|------------------|-----------------------------------------|--------------|
+| Python Unit      | `make test-python` / `pytest test/unit/`| `pytest`     |
+| C++ Unit         | `make test-cpp` / `make test`           | `g++`, `gtest`|
+| Coverage (C++)   | `make coverage-cpp`                     | `gcovr`      |
+| Optional (C++)   | `cd test/unit/c++ && cmake .. && ctest` | `cmake`, `ctest`|
+
+---
+
 ## 🧩 Module-Test Mapping
 
 | Module                  | Test Type            | Scope                                                                 |
@@ -65,6 +76,7 @@ This strategy supports incremental validation of ATROP’s unique autonomous beh
 |-------------|--------------------------------------------------|
 | `pytest`    | Python unit tests (control, ML, telemetry logic) |
 | `gtest`     | C++ FSM and protocol logic validation            |
+| `gcovr`     | C++ coverage reporting                           |
 | `Mininet`   | Simulated ATZ topologies                         |
 | `FRRouting` | Legacy interop validation                        |
 | `FSM Sim`   | Custom test engine for zone behavior             |
@@ -99,11 +111,11 @@ This strategy supports incremental validation of ATROP’s unique autonomous beh
 
 ## ✅ Acceptance Criteria
 
-- [ ] Testing layers are clearly defined and aligned with protocol components
-- [ ] FSM simulation engine is included and functional
-- [ ] CI triggers unit and integration tests on all commits
-- [ ] Toolchain setup is documented and portable
-- [ ] Strategy validated by protocol, AI, and ML leads
+- [x] Testing layers are clearly defined and aligned with protocol components
+- [x] FSM simulation engine is included and functional
+- [x] CI triggers unit and integration tests on all commits
+- [x] Toolchain setup is documented and portable
+- [x] Strategy validated by protocol, AI, and ML leads
 
 ---
 
