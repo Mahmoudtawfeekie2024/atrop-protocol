@@ -53,3 +53,31 @@ $(BUILD_DIR)/%.o: $(SDK_CPP_DIR)/%.cpp | $(BUILD_DIR)
 # Link into final binary (or you can archive into lib if you prefer)
 $(SDK_CPP_BIN): $(SDK_CPP_OBJ)
 	$(CXX) $(CXXFLAGS) $^ -o $@
+
+# ==== gRPC Stub Generation ====
+
+PROTO_DIR := sdk/grpc
+PROTO_FILE := $(PROTO_DIR)/atrop.proto
+
+GRPC_PY_OUT := $(PROTO_DIR)/build_py
+GRPC_CPP_OUT := $(PROTO_DIR)/build_cpp
+
+generate-grpc-stubs: generate-grpc-py generate-grpc-cpp
+
+generate-grpc-py:
+	@echo "🧪 Generating Python gRPC stubs..."
+	python -m grpc_tools.protoc -I$(PROTO_DIR) \
+	  --python_out=$(GRPC_PY_OUT) \
+	  --grpc_python_out=$(GRPC_PY_OUT) \
+	  $(PROTO_FILE)
+
+generate-grpc-cpp:
+	@echo "⚙️ Generating C++ gRPC stubs..."
+	protoc -I$(PROTO_DIR) \
+	  --cpp_out=$(GRPC_CPP_OUT) \
+	  --grpc_out=$(GRPC_CPP_OUT) \
+	  --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
+	  $(PROTO_FILE)
+
+clean-grpc:
+	rm -rf $(GRPC_PY_OUT) $(GRPC_CPP_OUT)
