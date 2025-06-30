@@ -1,6 +1,9 @@
 # === Testing ===
 pytest>=7.0
 
+# === Virtual Environment Support ===
+virtualenv>=20.0
+
 # === Linting & Type Checking ===
 mypy>=1.0
 flake8>=6.0
@@ -13,5 +16,5 @@ grpcio>=1.60
 grpcio-tools>=1.60
 protobuf>=4.23
 
-# === Version Control Hooks (Optional)
+# === Version Control Hooks (Optional) ===
 pre-commit>=3.0
