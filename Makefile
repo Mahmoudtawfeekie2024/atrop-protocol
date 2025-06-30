@@ -135,6 +135,14 @@ check-versions:
 	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | \
 		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
 
+# Run ATROP Control Plane Binary (example CLI entrypoint)
+run:
+	@echo "🚀 Running ATROP control plane binary..."
+	./$(CONTROL_PLANE_BIN)
+
+.PHONY: run
+
+
 # ================================
 # ✅ Optional Enhancements Section
 # ================================
@@ -149,3 +157,4 @@ rebuild: clean all
 
 # Declare new PHONY targets
 .PHONY: rebuild
+
