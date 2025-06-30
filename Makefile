@@ -139,6 +139,11 @@ check-versions:
 # ✅ Optional Enhancements Section
 # ================================
 
+# Alias: build is same as all
+build: all
+
+.PHONY: build
+
 # Clean and rebuild everything
 rebuild: clean all
 
