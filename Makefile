@@ -89,3 +89,17 @@ PYTHON_TEST_DIR := test/unit
 test-python:
 	@echo "🧪 Running Python tests in $(PYTHON_TEST_DIR)..."
 	python -m pytest $(PYTHON_TEST_DIR)
+
+# === C++ Unit Testing ===
+
+GTEST_SRC := test/unit/c++/test_main.cpp test/unit/c++/test_sdk.cpp
+GTEST_BIN := build/test_cpp
+
+test-cpp: $(GTEST_BIN)
+	@echo "🧪 Running C++ unit tests..."
+	./$(GTEST_BIN)
+
+$(GTEST_BIN): $(GTEST_SRC)
+	$(CXX) $(CXXFLAGS) -lgtest -lgtest_main -pthread $^ -o $@
+
+.PHONY: test-cpp
