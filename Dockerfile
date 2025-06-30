@@ -9,7 +9,7 @@ LABEL description="Dockerfile for ATROP protocol build and test system"
 ARG DEBIAN_FRONTEND=noninteractive
 
 # --------------------------------
-# OS + Build Essentials
+# OS + Build & Developer Essentials
 # --------------------------------
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -17,6 +17,8 @@ RUN apt-get update && apt-get install -y \
     g++ \
     make \
     git \
+    curl \
+    htop \
     protobuf-compiler \
     libgtest-dev \
     bash-completion \
@@ -30,7 +32,8 @@ RUN apt-get update && apt-get install -y \
 # --------------------------------
 COPY dev-requirements.txt /tmp/dev-requirements.txt
 RUN pip install --upgrade pip && \
-    pip install -r /tmp/dev-requirements.txt
+    pip install -r /tmp/dev-requirements.txt && \
+    pip install virtualenv
 
 # --------------------------------
 # Create user for non-root dev
@@ -44,11 +47,15 @@ USER atropuser
 WORKDIR /app
 COPY . .
 
+# Shared source volumes (for mounting outside)
 VOLUME ["/app/daemon", "/app/sdk", "/app/test"]
 
 # --------------------------------
-# Default build action
+# Default build action (optional)
 # --------------------------------
 RUN make all
 
+# --------------------------------
+# Boot into interactive shell (or override via CMD)
+# --------------------------------
 CMD ["/bin/bash"]
