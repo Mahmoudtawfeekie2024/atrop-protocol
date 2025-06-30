@@ -2,7 +2,8 @@
 
 # Compiler settings
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -O2
+CXXFLAGS := -std=c++17 -Wall -O2 --coverage
+LDFLAGS := -lgtest -lgtest_main -pthread --coverage
 
 # Submodules
 DAEMON_SRC := daemon/control_plane/main.cpp daemon/data_plane/main.cpp daemon/ipc/main.cpp
@@ -32,7 +33,7 @@ $(BUILD_DIR):
 
 # Cleanup
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) *.gcda *.gcno *.gcov
 
 .PHONY: all clean
 
@@ -97,11 +98,21 @@ test-cpp: $(GTEST_BIN)
 	./$(GTEST_BIN)
 
 $(GTEST_BIN): $(GTEST_SRC)
-	$(CXX) $(CXXFLAGS) -lgtest -lgtest_main -pthread $^ -o $@
+	$(CXX) $(CXXFLAGS) $(GTEST_SRC) -o $(GTEST_BIN) $(LDFLAGS)
 
 # ===== Unified Test Target (Python + C++) =====
 
 test: test-python test-cpp
+
+# ==== C++ Code Coverage Report ====
+
+coverage-cpp:
+	@echo "🧪 Generating C++ code coverage report..."
+	@gcovr -r . --exclude-directories test --exclude build/ \
+	    --html --html-details -o build/coverage.html
+	@echo "📄 Coverage report saved to: build/coverage.html"
+
+.PHONY: generate-grpc-stubs test-python test-cpp test coverage-cpp clean all
 
 # ================================
 # 🔍 Tool Version Checks
@@ -123,5 +134,3 @@ check-versions:
 
 	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | \
 		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
-
-.PHONY: generate-grpc-stubs test-python test-cpp test clean all
