@@ -1,0 +1,32 @@
+{
+  "name": "ATROP Dev Container",
+  "dockerFile": "../Dockerfile",
+  "context": "..",
+  "workspaceFolder": "/app",
+  "runArgs": [
+    "--cap-add=NET_ADMIN",
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
+  ],
+  "mounts": [
+    "source=${localWorkspaceFolder}/daemon,target=/app/daemon,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/sdk,target=/app/sdk,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/test,target=/app/test,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/models,target=/app/models,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/docs,target=/app/docs,type=bind,consistency=cached"
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.defaultInterpreterPath": "/usr/local/bin/python",
+    "editor.formatOnSave": true
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-vscode.cpptools",
+    "ms-azuretools.vscode-docker",
+    "streetsidesoftware.code-spell-checker",
+    "github.vscode-pull-request-github"
+  ],
+  "postCreateCommand": "bash /usr/local/bin/testenv.sh || true"
+}
