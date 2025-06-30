@@ -35,3 +35,21 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 .PHONY: all clean
+
+# ==== SDK C++ Section ====
+
+SDK_CPP_DIR := sdk/c++
+SDK_CPP_SRC := $(wildcard $(SDK_CPP_DIR)/*.cpp)
+SDK_CPP_OBJ := $(patsubst $(SDK_CPP_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SDK_CPP_SRC))
+SDK_CPP_BIN := $(BUILD_DIR)/sdk_cpp_demo
+
+# Add SDK binary to default build
+all: $(SDK_CPP_BIN)
+
+# Compile object files
+$(BUILD_DIR)/%.o: $(SDK_CPP_DIR)/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Link into final binary (or you can archive into lib if you prefer)
+$(SDK_CPP_BIN): $(SDK_CPP_OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
