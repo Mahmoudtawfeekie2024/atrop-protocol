@@ -1,0 +1,36 @@
+# === Build Artifacts ===
+build/
+*.o
+*.out
+*.so
+*.a
+*.log
+*.dSYM/
+*.exe
+*.dll
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+pip-wheel-metadata/
+
+# === IDEs ===
+.vscode/
+.idea/
+*.swp
+
+# === CI Artifacts ===
+coverage/
+htmlcov/
+.cache/
+.tox/
+.mypy_cache/
+
+# === Misc ===
+*.bak
+*.tmp
