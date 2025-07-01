@@ -134,3 +134,24 @@ jobs:
 
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
+
+  python-test:
+    name: 🧪 Python Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+  
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+  
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+  
+      - name: Run pytest on unit tests
+        run: |
+          pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
