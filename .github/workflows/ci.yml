@@ -28,6 +28,7 @@ jobs:
           g++ \
           make \
           protobuf-compiler \
+          protobuf-compiler-grpc \
           libgtest-dev \
           python3-pip
 
