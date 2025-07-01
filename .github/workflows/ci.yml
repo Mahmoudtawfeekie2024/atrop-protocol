@@ -89,6 +89,24 @@ jobs:
           ruff check test/
           ruff check models/
 
+  cpp-lint:
+    name: 🧼 C++ Lint (clang-tidy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+  
+      - name: Install clang-tidy
+        run: sudo apt update && sudo apt install -y clang-tidy
+  
+      - name: Run clang-tidy on daemon/control_plane
+        run: |
+          find daemon/control_plane -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
+  
+      - name: Run clang-tidy on daemon/ipc
+        run: |
+          find daemon/ipc -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
+
 
   docker-lint:
     name: 🐳 Dockerfile Lint & Build Check
