@@ -81,13 +81,14 @@ jobs:
       - name: Install ruff
         run: pip install ruff
   
-      - name: Run ruff on Python directories
+      - name: Run ruff on all Python dirs
         run: |
           ruff check daemon/
           ruff check sdk/
           ruff check tools/
           ruff check test/
           ruff check models/
+
 
   docker-lint:
     name: 🐳 Dockerfile Lint & Build Check
