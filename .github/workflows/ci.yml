@@ -29,6 +29,7 @@ jobs:
 
     - name: 🐍 Install SDK in editable mode
       run: pip install -e sdk/python
+      working-directory: .
 
     - name: 🔍 Check tool versions (optional)
       run: make check-versions
