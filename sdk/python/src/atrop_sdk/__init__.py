@@ -1,2 +1,2 @@
 import pytest  # noqa: F401
-from .core import *  # noqa: F403
+from atrop_sdk import core
