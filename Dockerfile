@@ -11,7 +11,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # --------------------------------
 # OS + Build & Developer Essentials
 # --------------------------------
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     g++ \
@@ -32,8 +32,8 @@ RUN apt-get update && apt-get install -y \
 # --------------------------------
 COPY dev-requirements.txt /tmp/dev-requirements.txt
 RUN pip install --upgrade pip && \
-    pip install -r /tmp/dev-requirements.txt && \
-    pip install virtualenv
+    pip install --no-cache-dir -r /tmp/dev-requirements.txt && \
+    pip install --no-cache-dir virtualenv
 
 # --------------------------------
 # Create non-root user for safe development
@@ -44,19 +44,19 @@ USER atropuser
 # --------------------------------
 # Add ATROP Developer Shell Aliases
 # --------------------------------
-RUN echo '\n# === ATROP Dev Aliases ===' >> /home/atropuser/.bashrc && \
-    echo "alias ll='ls -alF --color=auto'" >> /home/atropuser/.bashrc && \
-    echo "alias gs='git status'" >> /home/atropuser/.bashrc && \
-    echo "alias gc='git commit'" >> /home/atropuser/.bashrc && \
-    echo "alias ga='git add'" >> /home/atropuser/.bashrc && \
-    echo "alias gp='git push'" >> /home/atropuser/.bashrc && \
-    echo "alias gco='git checkout'" >> /home/atropuser/.bashrc && \
-    echo "alias cdp='cd /app/protocol'" >> /home/atropuser/.bashrc && \
-    echo "alias cdcp='cd /app/daemon/control_plane'" >> /home/atropuser/.bashrc && \
-    echo "alias cddp='cd /app/daemon/data_plane'" >> /home/atropuser/.bashrc && \
-    echo "alias cdtest='cd /app/test'" >> /home/atropuser/.bashrc && \
-    echo "alias atest='pytest test/unit/'" >> /home/atropuser/.bashrc && \
-    echo "alias rebuild='make clean && make all'" >> /home/atropuser/.bashrc && \
+RUN printf '\n# === ATROP Dev Aliases ===\n' >> /home/atropuser/.bashrc && \
+    printf "alias ll='ls -alF --color=auto'\n" >> /home/atropuser/.bashrc && \
+    printf "alias gs='git status'\n" >> /home/atropuser/.bashrc && \
+    printf "alias gc='git commit'\n" >> /home/atropuser/.bashrc && \
+    printf "alias ga='git add'\n" >> /home/atropuser/.bashrc && \
+    printf "alias gp='git push'\n" >> /home/atropuser/.bashrc && \
+    printf "alias gco='git checkout'\n" >> /home/atropuser/.bashrc && \
+    printf "alias cdp='cd /app/protocol'\n" >> /home/atropuser/.bashrc && \
+    printf "alias cdcp='cd /app/daemon/control_plane'\n" >> /home/atropuser/.bashrc && \
+    printf "alias cddp='cd /app/daemon/data_plane'\n" >> /home/atropuser/.bashrc && \
+    printf "alias cdtest='cd /app/test'\n" >> /home/atropuser/.bashrc && \
+    printf "alias atest='pytest test/unit/'\n" >> /home/atropuser/.bashrc && \
+    printf "alias rebuild='make clean && make all'\n" >> /home/atropuser/.bashrc && \
     chown atropuser:atropuser /home/atropuser/.bashrc
 
 # --------------------------------
