@@ -157,7 +157,7 @@ jobs:
         env:
           PYTHONPATH: ./sdk/python/src
         run: pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
-  
+        
   cpp-test:
     name: 🧪 C++ Unit Tests
     runs-on: ubuntu-latest
@@ -170,10 +170,11 @@ jobs:
           sudo apt update
           sudo apt install -y cmake g++ libgtest-dev
   
-      - name: Build and run tests
+      - name: Build and run C++ tests
         run: |
           mkdir -p build
           cd build
           cmake ..
           make
           ctest --output-on-failure
+  
