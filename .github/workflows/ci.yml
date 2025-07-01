@@ -66,28 +66,28 @@ jobs:
         ls -R sdk/grpc/build_py || true
         ls -R sdk/grpc/build_cpp || true
 
-  python-lint:
-    name: 🧼 Python Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+python-lint:
+  name: 🧼 Python Lint
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Install ruff
-        run: pip install ruff
+    - name: Install ruff
+      run: pip install ruff
 
-      - name: Run ruff on Python files
-        run: |
-          ruff daemon/
-          ruff sdk/
-          ruff tools/
-          ruff test/
-          ruff models/
+    - name: Run ruff on Python directories
+      run: |
+        ruff check daemon/
+        ruff check sdk/
+        ruff check tools/
+        ruff check test/
+        ruff check models/
 
   docker-lint:
     name: 🐳 Dockerfile Lint & Build Check
