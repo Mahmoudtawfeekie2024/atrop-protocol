@@ -15,8 +15,5 @@ target_link_libraries(test_sample
   pthread
 )
 
-include(GoogleTest)
-gtest_discover_tests(test_sample
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test/c++
-  DISCOVERY_TIMEOUT 10
-)
+# 💥 Run the binary directly. No discovery. No guesswork.
+add_test(NAME test_sample COMMAND test_sample)
