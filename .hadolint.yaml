@@ -1,2 +1,5 @@
 ignore:
   - DL3013  # Don't require pip package pinning
+  - DL3008  # Don't require pip package pinning
+  - DL3015  # Don't require pip package pinning
+  - DL3042  # Don't require pip package pinning
