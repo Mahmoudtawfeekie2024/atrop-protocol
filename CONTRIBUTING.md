@@ -1,3 +1,4 @@
+
 # 🌐 Contributing to ATROP
 
 Thank you for your interest in contributing to **ATROP** — the Autonomous Topology-Optimized Routing Protocol.
@@ -105,3 +106,70 @@ All contributors must follow our [Code of Conduct](./CODE_OF_CONDUCT.md). Be res
 
 Together, we’re building a smarter, autonomous routing future.
 
+---
+
+## 🧪 Running Lint and Tests Locally
+
+Before submitting a pull request, contributors must validate code quality **locally** using the same tools that CI runs.
+
+---
+
+### 🧼 Python Lint (ruff)
+
+Run linting on all Python modules:
+
+```bash
+pip install ruff
+ruff check daemon/ sdk/ tools/ test/ models/
+```
+
+---
+
+### 🧪 Python Unit Tests
+
+Run all unit tests with `pytest`:
+
+```bash
+pip install pytest
+export PYTHONPATH=$(pwd)/sdk/python
+pytest test/unit/
+```
+
+---
+
+### 🧼 C++ Lint (clang-tidy)
+
+Install and run C++ linter:
+
+```bash
+sudo apt install clang-tidy
+clang-tidy daemon/control_plane/*.cpp
+clang-tidy daemon/ipc/*.cpp
+```
+
+---
+
+### 🧪 C++ Unit Tests
+
+Build and test with `cmake` and `ctest`:
+
+```bash
+sudo apt install cmake g++
+mkdir -p build
+cd build
+cmake ..
+make
+ctest --output-on-failure
+```
+
+---
+
+### ✅ Contributor CI Expectations
+
+- All PRs must pass CI before merging.
+- Code must be clean (no lint errors).
+- All existing and new tests must pass.
+- PRs should be small, scoped, and reviewed by at least one reviewer.
+- `main` is a protected branch — direct pushes are not allowed.
+
+For detailed build and test flow, see the [README.md](./README.md) or CI logs under the **Actions** tab.
