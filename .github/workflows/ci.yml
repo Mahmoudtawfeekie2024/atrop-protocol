@@ -169,6 +169,15 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y cmake g++ libgtest-dev
+          
+      - name: Install dependencies and build gtest
+        run: |
+          sudo apt update
+          sudo apt install -y cmake g++ libgtest-dev
+          cd /usr/src/gtest
+          sudo cmake .
+          sudo make
+          sudo cp lib/*.a /usr/lib
   
       - name: Build and run C++ tests
         run: |
