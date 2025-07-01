@@ -139,6 +139,12 @@ jobs:
     name: 🧪 Python Unit Tests
     runs-on: ubuntu-latest
     steps:
+
+      - name: Run pytest on unit tests
+        run: |
+          export PYTHONPATH=$PYTHONPATH:./sdk/python/src
+          pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
+
       - name: Checkout Repo
         uses: actions/checkout@v3
   
