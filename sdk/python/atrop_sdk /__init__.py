@@ -1,1 +1,1 @@
-from .core import say_hello
+from .core import *
