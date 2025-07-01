@@ -46,7 +46,10 @@ jobs:
       run: make
 
     - name: 🧪 Run Python unit tests
-      run: make test-python
+      run: |
+        export PYTHONPATH=sdk/python
+        pytest test/unit
+
 
     - name: 🔌 Generate gRPC stubs
       run: make generate-grpc-stubs
