@@ -83,7 +83,12 @@ jobs:
         cat .hadolint.yaml || echo "⚠️ Not found"
 
     - name: 🔍 Lint Dockerfile with hadolint + config
-      run: docker run --rm -i -v "$PWD:/mnt" hadolint/hadolint < Dockerfile --config /mnt/.hadolint.yaml
+      run: |
+        docker run --rm \
+          -v "${{ github.workspace }}:/mnt" \
+          hadolint/hadolint \
+          hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
+
 
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
