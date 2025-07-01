@@ -82,11 +82,8 @@ jobs:
         echo "Printing .hadolint.yaml:"
         cat .hadolint.yaml || echo "⚠️ Not found"
 
-    - name: 🔍 Lint Dockerfile with hadolint
-      uses: hadolint/hadolint-action@v3.1.0
-      with:
-        dockerfile: Dockerfile
-        config: ./.hadolint.yaml
+    - name: 🔍 Lint Dockerfile with hadolint + config
+      run: docker run --rm -i -v "$PWD:/mnt" hadolint/hadolint < Dockerfile --config /mnt/.hadolint.yaml
 
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
