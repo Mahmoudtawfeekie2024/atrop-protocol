@@ -1,5 +1,5 @@
-import pytest
+import pytest  # noqa: F401
 from atrop_sdk import core
 
-def test_core_import():
-    assert hasattr(core, '__version__') or True  # Dummy placeholder
+def test_dummy():
+    assert True
