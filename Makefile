@@ -64,6 +64,7 @@ generate-grpc-stubs: generate-grpc-py generate-grpc-cpp
 
 generate-grpc-py:
 	@echo "🧪 Generating Python gRPC stubs..."
+	mkdir -p $(GRPC_PY_OUT)
 	python -m grpc_tools.protoc -I$(PROTO_DIR) \
 	  --python_out=$(GRPC_PY_OUT) \
 	  --grpc_python_out=$(GRPC_PY_OUT) \
@@ -71,6 +72,7 @@ generate-grpc-py:
 
 generate-grpc-cpp:
 	@echo "⚙️ Generating C++ gRPC stubs..."
+	mkdir -p $(GRPC_CPP_OUT)
 	protoc -I$(PROTO_DIR) \
 	  --cpp_out=$(GRPC_CPP_OUT) \
 	  --grpc_out=$(GRPC_CPP_OUT) \
@@ -157,4 +159,3 @@ rebuild: clean all
 
 # Declare new PHONY targets
 .PHONY: rebuild
-
