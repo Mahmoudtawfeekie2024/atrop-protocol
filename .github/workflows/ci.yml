@@ -1,3 +1,4 @@
+
 name: Build and Test ATROP
 
 on:
@@ -21,29 +22,28 @@ jobs:
 
     - name: ⚙️ Install system dependencies
       run: |
-        sudo apt update && sudo apt install -y           build-essential           cmake           g++           make           protobuf-compiler           libgtest-dev           python3-pip
+        sudo apt update && sudo apt install -y \
+          build-essential \
+          cmake \
+          g++ \
+          make \
+          protobuf-compiler \
+          libgtest-dev \
+          python3-pip
 
     - name: 🐍 Install Python dependencies
       run: |
         pip install -r dev-requirements.txt
 
-    - name: 🔍 Inspect Python sys.path
-      run: python -c "import sys; print('\\n'.join(sys.path))"
-
     - name: 🐍 Install SDK in editable mode
-      run: pip install -e sdk/python
-      working-directory: .
+      run: pip install -e ./sdk/python
 
-    - name: ✅ Confirm SDK import works
+    - name: 🔍 Print Python sys.path and import check
       run: |
-        PYTHONPATH=sdk/python python -c "import atrop_sdk; print('✅ atrop_sdk loaded:', atrop_sdk)"
-
-    - name: 🔍 Debug site-packages and SDK install
-      run: |
-       which python
-       python --version
-       pip list | grep atrop
-       python -c "import atrop_sdk; print('✅ atrop_sdk loaded:', atrop_sdk)"
+        export PYTHONPATH=$(pwd)/sdk/python
+        echo "Python Path:"
+        python -c "import sys; print('\n'.join(sys.path))"
+        python -c "import atrop_sdk; print('✅ SDK Import Successful:', atrop_sdk)"
 
     - name: 🔍 Check tool versions (optional)
       run: make check-versions
@@ -53,16 +53,15 @@ jobs:
 
     - name: 🧪 Run Python unit tests
       run: |
-        export PYTHONPATH=sdk/python
-        pytest test/unit
-
+        export PYTHONPATH=$(pwd)/sdk/python
+        make test-python
 
     - name: 🔌 Generate gRPC stubs
       run: make generate-grpc-stubs
 
     - name: 📁 Inspect Build Output
       run: |
-        file build/*
+        file build/* || true
         ls -R sdk/grpc/build_py || true
         ls -R sdk/grpc/build_cpp || true
 
