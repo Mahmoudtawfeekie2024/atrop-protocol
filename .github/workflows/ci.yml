@@ -1,4 +1,3 @@
-
 name: Build and Test ATROP
 
 on:
@@ -11,6 +10,13 @@ on:
       - 'dev-requirements.txt'
       - '.github/workflows/ci.yml'
   pull_request:
+    paths:
+      - 'Makefile'
+      - 'daemon/**'
+      - 'sdk/**'
+      - 'test/**'
+      - 'dev-requirements.txt'
+      - '.github/workflows/ci.yml'
 
 jobs:
   build:
@@ -107,7 +113,6 @@ jobs:
         run: |
           find daemon/ipc -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
 
-
   docker-lint:
     name: 🐳 Dockerfile Lint & Build Check
     runs-on: ubuntu-latest
@@ -131,12 +136,10 @@ jobs:
           hadolint/hadolint \
           hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
 
-
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
 
   python-test:
-    
     name: 🧪 Python Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -156,8 +159,11 @@ jobs:
       - name: Run pytest on unit tests
         env:
           PYTHONPATH: ./sdk/python/src
-        run: pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
-        
+        run: |
+          echo "=== Running Python Unit Tests ==="
+          pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
+          echo "=== Python Unit Tests Completed ==="
+
   cpp-test:
     name: 🧪 C++ Unit Tests
     runs-on: ubuntu-latest
@@ -169,21 +175,13 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y cmake g++ libgtest-dev
-          
-      - name: Install dependencies and build gtest
-        run: |
-          sudo apt update
-          sudo apt install -y cmake g++ libgtest-dev
-          cd /usr/src/gtest
-          sudo cmake .
-          sudo make
-          sudo cp lib/*.a /usr/lib
-    
+
       - name: Build and run C++ tests
         run: |
           mkdir -p build
           cd build
           cmake ..
           make
+          echo "=== Running C++ Unit Tests ==="
           ctest --output-on-failure
-  
+          echo "=== C++ Unit Tests Completed ==="
