@@ -27,7 +27,7 @@ jobs:
     - name: 🐍 Install Python dependencies
       run: |
         pip install -r dev-requirements.txt
-        
+
     - name: 🐍 Install SDK in editable mode
       run: pip install -e sdk/python
 
