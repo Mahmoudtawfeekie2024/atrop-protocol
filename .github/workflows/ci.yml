@@ -75,11 +75,18 @@ jobs:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
 
+    - name: 🧪 Debug check for .hadolint.yaml
+      run: |
+        echo "Listing root files:"
+        ls -la .
+        echo "Printing .hadolint.yaml:"
+        cat .hadolint.yaml || echo "⚠️ Not found"
+
     - name: 🔍 Lint Dockerfile with hadolint
       uses: hadolint/hadolint-action@v3.1.0
       with:
         dockerfile: Dockerfile
-        config: .hadolint.yaml
+        config: ./.hadolint.yaml
 
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
