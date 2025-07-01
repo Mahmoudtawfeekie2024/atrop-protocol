@@ -1,2 +1,4 @@
 import pytest  # noqa: F401
-from atrop_sdk import core
+from . import core
+
+__all__ = ["core"]
