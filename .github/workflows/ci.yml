@@ -31,6 +31,14 @@ jobs:
       run: pip install -e sdk/python
       working-directory: .
 
+    - name: 🔍 Debug site-packages and SDK install
+      run: |
+       which python
+       python --version
+       pip list | grep atrop
+       python -c "import atrop_sdk; print('✅ atrop_sdk loaded:', atrop_sdk)"
+
+
     - name: 🔍 Check tool versions (optional)
       run: make check-versions
 
