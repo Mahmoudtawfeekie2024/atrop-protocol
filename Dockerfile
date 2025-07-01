@@ -12,28 +12,28 @@ ARG DEBIAN_FRONTEND=noninteractive
 # OS + Build & Developer Essentials
 # --------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential=12.10ubuntu1 \
-    cmake=3.28.3-1build7 \
-    g++=4:13.2.0-7ubuntu1 \
-    make=4.3-4.1build2 \
-    git=1:2.43.0-1ubuntu1 \
-    curl=8.5.0-1 \
-    htop=3.2.2-1 \
-    protobuf-compiler=3.21.12-8.2ubuntu0.1 \
-    libgtest-dev=1.14.0-1 \
-    bash-completion=1:2.11-7 \
-    iputils-ping=3:20221126-1build1 \
-    net-tools=1.60+git20181103.0eebece-2ubuntu1 \
-    tcpdump=4.99.4-1ubuntu1 \
+    build-essential=12.9 \
+    cmake=3.25.1-1 \
+    g++=4:12.2.0-1 \
+    make=4.3-4 \
+    git=1:2.39.2-1 \
+    curl=7.88.1-10 \
+    htop=3.2.1-1 \
+    protobuf-compiler=3.21.12-1 \
+    libgtest-dev=1.12.1-1 \
+    bash-completion=1:2.11-6 \
+    iputils-ping=3:20221126-1 \
+    net-tools=1.60+git20181103.0eebece-1 \
+    tcpdump=4.99.4-1 \
     && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------
 # Python Dev Requirements
 # --------------------------------
 COPY dev-requirements.txt /tmp/dev-requirements.txt
-RUN pip install --upgrade pip && \
+RUN pip install --upgrade pip --no-cache-dir && \
     pip install --no-cache-dir -r /tmp/dev-requirements.txt && \
-    pip install --no-cache-dir virtualenv
+    pip install --no-cache-dir virtualenv==20.26.1
 
 # --------------------------------
 # Create non-root user for safe development
@@ -44,7 +44,7 @@ USER atropuser
 # --------------------------------
 # Add ATROP Developer Shell Aliases
 # --------------------------------
-RUN echo '\n# === ATROP Dev Aliases ===' >> /home/atropuser/.bashrc && \
+RUN printf "\n# === ATROP Dev Aliases ===\n" >> /home/atropuser/.bashrc && \
     echo "alias ll='ls -alF --color=auto'" >> /home/atropuser/.bashrc && \
     echo "alias gs='git status'" >> /home/atropuser/.bashrc && \
     echo "alias gc='git commit'" >> /home/atropuser/.bashrc && \
