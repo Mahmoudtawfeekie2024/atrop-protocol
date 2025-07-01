@@ -1,3 +1,4 @@
+<!-- CI validation test -->
 # ATROP – Autonomous Topology-Optimized Routing Protocol
 
 > ⚙️ AI-Native | 🧠 ML-Augmented | 🛰 Topology-Aware | 🔐 Zero-Trust Secure | 🧩 Protocol-Independent
