@@ -1,16 +1,14 @@
+# test/unit/cpp/CMakeLists.txt
 cmake_minimum_required(VERSION 3.10)
-project(ATROP_Cpp_Tests)
+project(ATROP_CppTests)
 
 enable_testing()
 
-# Use system gtest or FetchContent if needed
 find_package(GTest REQUIRED)
-
 include_directories(${GTEST_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/sdk/c++)
 
-add_executable(test_main test_main.cpp test_sdk.cpp)
+add_executable(test_sample test_sample.cpp)
 
-target_link_libraries(test_main GTest::GTest GTest::Main pthread)
+target_link_libraries(test_sample ${GTEST_LIBRARIES} pthread)
 
-add_test(NAME CppUnitTests COMMAND test_main)
+add_test(NAME test_sample COMMAND test_sample)
