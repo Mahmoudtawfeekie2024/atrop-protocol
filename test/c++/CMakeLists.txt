@@ -14,6 +14,5 @@ target_link_libraries(test_sample
   pthread
 )
 
-# ✅ This will automatically register all TEST() cases with CTest
 include(GoogleTest)
 gtest_discover_tests(test_sample)
