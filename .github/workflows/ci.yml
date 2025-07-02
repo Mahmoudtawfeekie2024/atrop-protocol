@@ -117,7 +117,6 @@ jobs:
     name: 🐳 Dockerfile Lint & Build Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
@@ -151,8 +150,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
-          pip install pytest-cov
+          pip install pytest pytest-cov pyyaml
 
       - name: Run pytest on unit tests
         env:
@@ -193,7 +191,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake ..
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           make
           echo "=== Running C++ Unit Tests ==="
           ctest --output-on-failure
