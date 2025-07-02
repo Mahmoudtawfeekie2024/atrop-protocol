@@ -1,0 +1,10 @@
+{
+  "module": {
+    "port": 9000,
+    "timeout": 20,
+    "log_level": "DEBUG"
+  ,  // <-- Invalid comma
+  "environment": {
+    "mode": "prod"
+  }
+}
