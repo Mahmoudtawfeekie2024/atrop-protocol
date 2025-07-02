@@ -37,8 +37,8 @@ $(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp sdk/c++/config_loader.cpp | 
 $(DATA_PLANE_BIN): daemon/data_plane/main.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
 
-$(IPC_BIN): daemon/ipc/main.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -o $@
+$(IPC_BIN): daemon/ipc/main.cpp sdk/c++/config_loader.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -Isdk/c++ $(INCLUDES) $^ -o $@ -L$(VCPKG_LIB_DIR) $(LIBS)
 
 # Create build directory if needed
 $(BUILD_DIR):
