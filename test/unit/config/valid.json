@@ -1,0 +1,15 @@
+{
+  "module": {
+    "port": 9090,
+    "timeout": 20,
+    "log_level": "DEBUG"
+  },
+  "environment": {
+    "mode": "prod"
+  },
+  "paths": {
+    "model_dir": "/opt/models",
+    "data_dir": "/opt/data",
+    "log_dir": "/opt/logs"
+  }
+}
