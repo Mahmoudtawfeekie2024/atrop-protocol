@@ -37,76 +37,56 @@ jobs:
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
       - name: Build daemon and SDK
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           mkdir -p build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           cmake --build . -- -j$(nproc)
 
-
-      - name: 🐍 Install Python dependencies
+      - name: Install Python dependencies
         run: |
           pip install -r dev-requirements.txt
           pip install pyyaml python-json-logger
 
-      - name: 🐍 Install SDK in editable mode
+      - name: Install SDK in editable mode
         run: pip install -e ./sdk/python
 
-      - name: 🔍 Print Python sys.path and import check
+      - name: Print Python sys.path and import check
         run: |
           export PYTHONPATH=$(pwd)/sdk/python
           echo "Python Path:"
           python -c "import sys; print('\n'.join(sys.path))"
           python -c "import atrop_sdk; print('✅ SDK Import Successful:', atrop_sdk)"
 
-      - name: 🔍 Check tool versions (optional)
+      - name: Check tool versions (optional)
         run: make check-versions
 
-      - name: 🛠 Build daemon and SDK
-        env:
-          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
-          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
-        run: make
-
-      - name: 🧪 Run Python unit tests
-        env:
-          PYTHONPATH: ./sdk/python/src
-        run: |
-          echo "=== Running Python Unit Tests ==="
-          pytest test/unit/ -v || echo "❌ Some tests failed, but continuing for debug"
-          echo "=== Python Unit Tests Completed ==="
-
-      - name: 🔌 Generate gRPC stubs
+      - name: Generate gRPC stubs
         run: make generate-grpc-stubs
 
-      - name: 📁 Inspect Build Output
+      - name: Inspect Build Output
         run: |
           file build/* || true
           ls -R sdk/grpc/build_py || true
           ls -R sdk/grpc/build_cpp || true
 
   python-lint:
-    name: 🧼 Python Lint
+    name: Python Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install ruff
-        run: pip install ruff
-
-      - name: Run ruff on all Python dirs
-        run: |
-          echo "🔍 Running ruff checks..."
+      - run: pip install ruff
+      - run: |
+          echo "Running ruff checks..."
           set -e
           ruff check daemon/ || echo "❌ daemon/ failed"
           ruff check sdk/ || echo "❌ sdk/ failed"
@@ -115,66 +95,45 @@ jobs:
           ruff check models/ || echo "❌ models/ failed"
 
   cpp-lint:
-    name: 🧼 C++ Lint (clang-tidy)
+    name: C++ Lint (clang-tidy)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-      - name: Install clang-tidy
-        run: sudo apt update && sudo apt install -y clang-tidy
-
-      - name: Run clang-tidy on daemon/control_plane
-        run: |
+      - uses: actions/checkout@v3
+      - run: sudo apt update && sudo apt install -y clang-tidy
+      - run: |
           find daemon/control_plane -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
-
-      - name: Run clang-tidy on daemon/ipc
-        run: |
+      - run: |
           find daemon/ipc -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
 
   docker-lint:
-    name: 🐳 Dockerfile Lint & Build Check
+    name: Dockerfile Lint & Build Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
-
-      - name: 🧪 Debug check for .hadolint.yaml
-        run: |
+      - uses: actions/checkout@v3
+      - run: |
           echo "Listing root files:"
           ls -la .
           echo "Printing .hadolint.yaml:"
           cat .hadolint.yaml || echo "⚠️ Not found"
-
-      - name: 🔍 Lint Dockerfile with hadolint + config
-        run: |
+      - run: |
           docker run --rm \
             -v "${{ github.workspace }}:/mnt" \
             hadolint/hadolint \
             hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
-
-      - name: 🛠 Test Docker Build
-        run: docker build -t atrop-dev .
+      - run: docker build -t atrop-dev .
 
   python-test:
-    name: 🧪 Python Unit Tests
+    name: Python Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install test dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov pyyaml
-
       - name: Run pytest on unit tests
         env:
           PYTHONPATH: ./sdk/python/src
@@ -182,30 +141,23 @@ jobs:
           echo "=== Running Python Unit Tests ==="
           pytest test/unit/ -v || echo "❌ Some tests failed, but continuing for debug"
           echo "=== Python Unit Tests Completed ==="
-
       - name: ✅ Valid JSON config load
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_json_load"
-
       - name: ✅ Valid YAML config load
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_yaml_load"
-
       - name: ⚠️ Missing required field
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_missing_required_field"
-
       - name: ❌ Invalid format file
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_invalid_json_format"
-
       - name: 🌱 Environment variable override
         if: ${{ always() }}
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_env_override"
 
   cpp-test:
-    name: 🧪 C++ Unit Tests
+    name: C++ Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Setup vcpkg
         run: |
           rm -rf vcpkg
@@ -215,12 +167,10 @@ jobs:
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y cmake g++ libgtest-dev
-
       - name: Build and run C++ tests
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
@@ -233,18 +183,14 @@ jobs:
           ctest --output-on-failure
 
   test-logger:
-    name: 🧪 Logger Unit Tests
+    name: Logger Unit Tests
     runs-on: ubuntu-latest
     needs: build
-
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Install system dependencies
         run: |
           sudo apt update && sudo apt install -y build-essential cmake g++ make python3 python3-pip
-
       - name: Setup vcpkg and install dependencies
         run: |
           rm -rf vcpkg
@@ -254,15 +200,10 @@ jobs:
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
-
       - name: Install Python dependencies
-        run: |
-          pip3 install pytest python-json-logger
-
+        run: pip3 install pytest python-json-logger
       - name: Make daemon a Python package in CI
-        run: |
-          find daemon -type d -exec touch {}/__init__.py \;
-
+        run: find daemon -type d -exec touch {}/__init__.py \;
       - name: Debug Python environment & files
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
@@ -271,13 +212,10 @@ jobs:
           python -c "import sys; print(sys.path)"
           ls -l daemon
           ls -l daemon/common
-
-      - name: 🧪 Run Python logger tests
+      - name: Run Python logger tests
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
-        run: |
-          python -m pytest test/unit/logger/test_logger.py -v
-
+        run: python -m pytest test/unit/logger/test_logger.py -v
       - name: Build and run C++ logger tests
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
@@ -287,7 +225,6 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
           ctest --output-on-failure -R logger
-
       - name: Debug test discovery
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
