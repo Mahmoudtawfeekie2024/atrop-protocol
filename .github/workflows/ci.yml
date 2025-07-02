@@ -274,7 +274,7 @@ jobs:
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
         run: |
-          pytest test/unit/logger/test_logger.py -v
+          pytest --rootdir=. test/unit/logger/test_logger.py -v
 
       - name: Build and run C++ logger tests
         run: |
