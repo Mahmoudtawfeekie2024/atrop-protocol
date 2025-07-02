@@ -32,7 +32,7 @@ IPC_BIN := $(BUILD_DIR)/ipc
 all: $(CONTROL_PLANE_BIN) $(DATA_PLANE_BIN) $(IPC_BIN) $(SDK_CPP_BIN)
 
 # Build rules for each binary
-$(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp sdk/c++/config_loader.cpp | $(BUILD_DIR)
+$(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp sdk/c++/config_loader.cpp daemon/common/logger.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@ $(LIB_PATH) $(LIBS)
 
 $(DATA_PLANE_BIN): daemon/data_plane/main.cpp | $(BUILD_DIR)
