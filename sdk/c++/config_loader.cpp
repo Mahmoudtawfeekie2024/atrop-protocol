@@ -5,6 +5,7 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 #include <stdexcept>
+#include <algorithm>
 
 using json = nlohmann::json;
 
@@ -16,7 +17,14 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         throw std::runtime_error("Config file not found: " + filepath);
     }
 
-    if (filepath.size() >= 5 && filepath.substr(filepath.size() - 5) == ".json") {
+    std::string ext;
+    size_t dot_pos = filepath.find_last_of('.');
+    if (dot_pos != std::string::npos)
+        ext = filepath.substr(dot_pos);
+
+    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+    if (ext == ".json") {
         json j;
         file >> j;
         for (auto& [key, value] : j.items()) {
@@ -27,8 +35,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
             else throw std::runtime_error("Unsupported JSON value for key: " + key);
         }
     }
-    else if ((filepath.size() >= 5 && filepath.substr(filepath.size() - 5) == ".yaml") ||
-             (filepath.size() >= 4 && filepath.substr(filepath.size() - 4) == ".yml")) {
+    else if (ext == ".yaml" || ext == ".yml") {
         YAML::Node y = YAML::Load(file);
         for (auto it = y.begin(); it != y.end(); ++it) {
             std::string key = it->first.as<std::string>();
@@ -41,7 +48,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         }
     }
     else {
-        throw std::runtime_error("Unsupported config file extension: " + filepath);
+        throw std::runtime_error("Unsupported config file extension: " + ext);
     }
 
     return config;
