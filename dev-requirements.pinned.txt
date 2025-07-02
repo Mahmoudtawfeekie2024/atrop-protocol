@@ -1,5 +1,6 @@
 # === Testing ===
 pytest>=7.0
+pytest-cov
 
 # === Virtual Environment Support ===
 virtualenv>=20.0
@@ -18,3 +19,6 @@ protobuf>=4.23
 
 # === Version Control Hooks (Optional) ===
 pre-commit>=3.0
+
+# === Config Parsing ===
+pyyaml>=6.0
