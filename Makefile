@@ -5,7 +5,18 @@ CXX := g++
 CXXFLAGS := -std=c++17 -Wall -O2 --coverage
 LDFLAGS := -lgtest -lgtest_main -pthread --coverage
 INCLUDES := -Isdk/c++
-LIBS := -lyaml-cpp -lnlohmann_json
+LIBS := -lyaml-cpp
+# Add VCPKG override if defined (for CI or local)
+ifeq ($(origin VCPKG_INCLUDE_DIR), environment)
+	INCLUDES += -I$(VCPKG_INCLUDE_DIR)
+endif
+
+ifeq ($(origin VCPKG_LIB_DIR), environment)
+	LIB_PATH := -L$(VCPKG_LIB_DIR)
+else
+	LIB_PATH :=
+endif
+
 
 # Submodules
 DAEMON_SRC := daemon/control_plane/main.cpp daemon/data_plane/main.cpp daemon/ipc/main.cpp
@@ -52,7 +63,7 @@ $(BUILD_DIR)/%.o: $(SDK_CPP_DIR)/%.cpp | $(BUILD_DIR)
 
 # Link into final binary (or you can archive into lib if you prefer)
 $(SDK_CPP_BIN): $(SDK_CPP_OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 # ==== gRPC Stub Generation ====
 
