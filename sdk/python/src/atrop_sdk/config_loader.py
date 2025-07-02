@@ -47,9 +47,15 @@ def load_config(config_path):
     try:
         with open(config_path, "r") as f:
             if ext == ".json":
-                return apply_defaults(json.load(f))
+                try:
+                    return apply_defaults(json.load(f))
+                except json.JSONDecodeError as e:
+                    raise ConfigLoaderError(f"Syntax error in JSON config: {e}")
             elif ext in [".yaml", ".yml"]:
-                return apply_defaults(yaml.safe_load(f))
+                try:
+                    return apply_defaults(yaml.safe_load(f))
+                except yaml.YAMLError as e:
+                    raise ConfigLoaderError(f"Syntax error in YAML config: {e}")
             else:
                 raise ConfigLoaderError(f"Unsupported file extension '{ext}'. Use .json or .yaml.")
     except Exception as e:
