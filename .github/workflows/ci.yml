@@ -191,11 +191,8 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install nlohmann-json yaml-cpp
-          
-      - name: 📦 Install spdlog via vcpkg
-        run: ./vcpkg/vcpkg install spdlog
-        
+          ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -205,15 +202,9 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake .. \
-            -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-            -DCMAKE_PREFIX_PATH="$(pwd)/../vcpkg/installed/x64-linux/share/spdlog"
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
           make -j$(nproc)
-          echo "=== Running C++ Unit Tests ==="
           ctest --output-on-failure
-          echo "=== C++ Unit Tests Completed ==="
-
-
 
   test-logger:
     name: 🧪 Logger Unit Tests
