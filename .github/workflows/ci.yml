@@ -212,9 +212,13 @@ jobs:
 
       - name: Setup vcpkg
         run: |
+          rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
+          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+
 
       - name: Install dependencies
         run: |
