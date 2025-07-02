@@ -5,7 +5,8 @@ CXX := g++
 CXXFLAGS := -std=c++17 -Wall -O2 --coverage
 LDFLAGS := -lgtest -lgtest_main -pthread --coverage
 INCLUDES := -Isdk/c++ -Idaemon/common
-LIBS := -lyaml-cpp
+LIBS := -lyaml-cpp -lfmt
+
 # Add VCPKG override if defined (for CI or local)
 ifeq ($(origin VCPKG_INCLUDE_DIR), environment)
 	INCLUDES += -I$(VCPKG_INCLUDE_DIR)
