@@ -41,6 +41,7 @@ jobs:
     - name: 🐍 Install Python dependencies
       run: |
         pip install -r dev-requirements.txt
+        pip install pyyaml
 
     - name: 🐍 Install SDK in editable mode
       run: pip install -e ./sdk/python
@@ -117,6 +118,7 @@ jobs:
     name: 🐳 Dockerfile Lint & Build Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v3
@@ -182,6 +184,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install nlohmann-json yaml-cpp
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -191,7 +199,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
           make
           echo "=== Running C++ Unit Tests ==="
           ctest --output-on-failure
