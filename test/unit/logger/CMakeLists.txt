@@ -4,7 +4,8 @@ project(logger_test)
 
 # Find required packages
 find_package(GTest REQUIRED CONFIG)
-find_package(spdlog REQUIRED)
+# Use CONFIG mode and tell it to look in VCPKG paths
+find_package(spdlog CONFIG REQUIRED)
 find_package(fmt REQUIRED)
 
 add_executable(logger_test
