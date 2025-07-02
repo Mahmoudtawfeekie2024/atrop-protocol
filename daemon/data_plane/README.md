@@ -25,6 +25,30 @@ python main.py
 
 ---
 
+## Configuration Loader
+
+The data plane uses the unified `ConfigLoader` library to read its runtime parameters.
+
+Supported formats:
+- JSON (default)
+- YAML (`.yaml` / `.yml`)
+
+Environment variable:
+```bash
+export ATROP_CONFIG_PATH=config.yaml
+```
+
+Example config snippet:
+```yaml
+module.port: 9090
+paths.log_dir: /var/log/atrop
+environment.mode: edge
+```
+
+If no config is provided, it falls back to internal defaults and logs a warning.
+
+---
+
 ## Future Additions
 
 - Flow classification models: DT, CNN, RL (Q-learning)
