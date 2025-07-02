@@ -28,7 +28,23 @@ jobs:
 
     - name: ⚙️ Install system dependencies
       run: |
-        sudo apt update && sudo apt install -y           build-essential           cmake           g++           make           protobuf-compiler           protobuf-compiler-grpc           libgtest-dev           python3-pip
+        sudo apt update && sudo apt install -y build-essential cmake g++ make protobuf-compiler protobuf-compiler-grpc libgtest-dev python3-pip
+
+    - name: Cache vcpkg packages
+      uses: actions/cache@v3
+      with:
+        path: vcpkg/installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vcpkg-
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('dev-requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: 📦 Install dependencies via vcpkg
       run: |
@@ -59,9 +75,13 @@ jobs:
     - name: 🛠 Build daemon and SDK
       run: make
 
+    - name: Fix yaml-cpp target link warning
+      run: sed -i 's/target_link_libraries(control_plane PRIVATE yaml-cpp)/target_link_libraries(control_plane PRIVATE yaml-cpp::yaml-cpp)/' CMakeLists.txt
+
     - name: 🧪 Run Python unit tests
       run: |
         export PYTHONPATH=$(pwd)/sdk/python
+        pytest --collect-only test/unit/ || true
         make test-python
 
     - name: 🔌 Generate gRPC stubs
@@ -226,24 +246,25 @@ jobs:
             ./vcpkg/vcpkg install spdlog gtest
             echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
             echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-    
+
         - name: Install Python dependencies
           run: |
             pip3 install pytest python-json-logger
-    
+
         - name: 🧪 Run Python logger tests
           env:
             PYTHONPATH: ./daemon:./sdk/python/src
           run: |
+            pytest --collect-only test/unit/logger/ || true
             pytest test/unit/logger/test_logger.py -v
-    
+
         - name: Build and run C++ logger tests
           run: |
             mkdir -p build && cd build
             cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
             make -j$(nproc)
             ctest --output-on-failure -R logger
-    
+
         - name: Debug test discovery
           run: |
             echo "Available unit tests:"
