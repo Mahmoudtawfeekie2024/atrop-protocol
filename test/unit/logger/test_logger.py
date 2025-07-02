@@ -1,7 +1,6 @@
-import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../daemon')))
-from logger import setup_logger
+import json
+from daemon.logger import setup_logger
+
 
 
 
