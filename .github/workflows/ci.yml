@@ -172,9 +172,10 @@ jobs:
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_missing_required_field"
 
       - name: ❌ Invalid format file
-        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_invalid_format"
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_invalid_json_format"
 
       - name: 🌱 Environment variable override
+        if: ${{ always() }}
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_env_override"
 
   cpp-test:
