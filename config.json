@@ -1,0 +1,15 @@
+{
+  "module": {
+    "port": 8080,
+    "timeout": 15,
+    "log_level": "DEBUG"
+  },
+  "environment": {
+    "mode": "dev"
+  },
+  "paths": {
+    "model_dir": "/opt/atrop/models",
+    "data_dir": "/opt/atrop/data",
+    "log_dir": "/var/log/atrop"
+  }
+}
