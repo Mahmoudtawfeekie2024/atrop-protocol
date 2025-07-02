@@ -1,12 +1,12 @@
 module:
   port: 8080
-  timeout: 10
+  timeout: 15
   log_level: DEBUG
 
 environment:
-  mode: test
+  mode: dev
 
 paths:
-  model_dir: /tmp/models
-  data_dir: /tmp/data
-  log_dir: /tmp/logs
+  model_dir: /opt/atrop/models
+  data_dir: /opt/atrop/data
+  log_dir: /var/log/atrop
