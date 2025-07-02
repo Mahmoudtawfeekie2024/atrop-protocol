@@ -192,7 +192,10 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp
-
+          
+      - name: 📦 Install spdlog via vcpkg
+        run: ./vcpkg/vcpkg install spdlog
+        
       - name: Install dependencies
         run: |
           sudo apt update
