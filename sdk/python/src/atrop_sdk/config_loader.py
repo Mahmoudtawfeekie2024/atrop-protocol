@@ -69,6 +69,7 @@ def load_config(config_path):
                 raise ConfigLoaderError(f"Unsupported file extension '{ext}'. Use .json or .yaml.")
 
             validate_required_fields(cfg)
+            print(f"[CONFIG] Successfully loaded and validated: {config_path}")
             return cfg
 
     except Exception as e:
