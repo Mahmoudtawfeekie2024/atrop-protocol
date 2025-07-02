@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <variant>
+#include <iostream>
 #include "config_loader.hpp"
 
 using namespace std;
@@ -43,26 +44,38 @@ paths.log_dir: "/tmp/logs"
             "module.timeout": 30
         })");
     }
+
+    template <typename T>
+    T get_variant_as(const ConfigValue& value) {
+        return std::visit([](auto&& val) -> T {
+            using U = std::decay_t<decltype(val)>;
+            if constexpr (std::is_convertible_v<U, T>) {
+                return static_cast<T>(val);
+            } else {
+                throw std::runtime_error("Incompatible type in variant");
+            }
+        }, value);
+    }
 };
 
 TEST_F(ConfigLoaderTest, ValidJSONLoadsSuccessfully) {
     auto cfg = ConfigLoader::load(test_dir + "valid.json");
-    EXPECT_EQ(std::get<int>(cfg["module.port"]), 9090);
-    EXPECT_EQ(std::get<string>(cfg["environment.mode"]), "prod");
-    EXPECT_EQ(std::get<string>(cfg["paths.log_dir"]), "/var/log/atrop");
+    EXPECT_EQ(get_variant_as<int>(cfg["module.port"]), 9090);
+    EXPECT_EQ(get_variant_as<string>(cfg["environment.mode"]), "prod");
+    EXPECT_EQ(get_variant_as<string>(cfg["paths.log_dir"]), "/var/log/atrop");
 }
 
 TEST_F(ConfigLoaderTest, ValidYAMLLoadsSuccessfully) {
     auto cfg = ConfigLoader::load(test_dir + "valid.yaml");
-    EXPECT_EQ(std::get<int>(cfg["module.port"]), 9091);
-    EXPECT_EQ(std::get<string>(cfg["environment.mode"]), "dev");
-    EXPECT_EQ(std::get<string>(cfg["paths.log_dir"]), "/tmp/logs");
+    EXPECT_EQ(get_variant_as<int>(cfg["module.port"]), 9091);
+    EXPECT_EQ(get_variant_as<string>(cfg["environment.mode"]), "dev");
+    EXPECT_EQ(get_variant_as<string>(cfg["paths.log_dir"]), "/tmp/logs");
 }
 
 TEST_F(ConfigLoaderTest, DefaultsAreAppliedWhenMissing) {
     auto cfg = ConfigLoader::load(test_dir + "missing.json");
-    EXPECT_EQ(std::get<int>(cfg["module.port"]), 8080);  // fallback
-    EXPECT_EQ(std::get<string>(cfg["paths.log_dir"]), "./logs");
+    EXPECT_EQ(get_variant_as<int>(cfg["module.port"]), 8080);  // fallback
+    EXPECT_EQ(get_variant_as<string>(cfg["paths.log_dir"]), "./logs");
 }
 
 TEST_F(ConfigLoaderTest, ThrowsOnInvalidFormat) {
