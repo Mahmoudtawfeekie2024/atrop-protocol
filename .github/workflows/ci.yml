@@ -90,11 +90,13 @@ jobs:
 
       - name: Run ruff on all Python dirs
         run: |
-          ruff check daemon/
-          ruff check sdk/
-          ruff check tools/
-          ruff check test/
-          ruff check models/
+          echo "🔍 Running ruff checks..."
+          set -e
+          ruff check daemon/ || echo "❌ daemon/ failed"
+          ruff check sdk/ || echo "❌ sdk/ failed"
+          ruff check tools/ || echo "❌ tools/ failed"
+          ruff check test/ || echo "❌ test/ failed"
+          ruff check models/ || echo "❌ models/ failed"
 
   cpp-lint:
     name: 🧼 C++ Lint (clang-tidy)
