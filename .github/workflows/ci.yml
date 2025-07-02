@@ -21,24 +21,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: ⚙️ Install system dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update && sudo apt install -y \
-            build-essential \
-            cmake \
-            g++ \
-            make \
-            protobuf-compiler \
-            protobuf-compiler-grpc \
-            libgtest-dev \
-            python3-pip
+            build-essential cmake g++ make protobuf-compiler protobuf-compiler-grpc libgtest-dev python3-pip
 
-      - name: 📦 Install dependencies via vcpkg
+      - name: Install dependencies via vcpkg
         run: |
           rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
@@ -46,7 +37,16 @@ jobs:
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
+
+      - name: Build daemon and SDK
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+          cmake --build . -- -j$(nproc)
+
 
       - name: 🐍 Install Python dependencies
         run: |
