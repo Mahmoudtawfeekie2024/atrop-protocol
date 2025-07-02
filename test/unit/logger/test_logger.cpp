@@ -1,7 +1,5 @@
-#include <gtest/gtest.h>
-#include <fstream>
-#include <nlohmann/json.hpp>
-#include <logger.hpp>
+from daemon.logger import setup_logger
+
 
 using json = nlohmann::json;
 
