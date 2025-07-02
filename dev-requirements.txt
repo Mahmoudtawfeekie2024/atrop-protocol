@@ -1,5 +1,7 @@
 # === Testing ===
 pytest>=7.0
+pytest
+pytest-cov
 
 # === Virtual Environment Support ===
 virtualenv>=20.0
