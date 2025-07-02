@@ -220,16 +220,14 @@ jobs:
 
       - name: Build and run C++ tests
         env:
-          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-          VCPKG_TOOLCHAIN_FILE: ${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
-          CMAKE_PREFIX_PATH: ${{ github.workspace }}/vcpkg/installed/x64-linux/share
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/x64-linux/share
         run: |
           mkdir -p build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
           ctest --output-on-failure
-
 
   test-logger:
     name: 🧪 Logger Unit Tests
@@ -246,9 +244,10 @@ jobs:
 
       - name: Setup vcpkg and install dependencies
         run: |
+          rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install spdlog gtest
+          ./vcpkg/vcpkg install spdlog gtest yaml-cpp
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
 
@@ -256,10 +255,18 @@ jobs:
         run: |
           pip3 install pytest python-json-logger
 
-      # Add this new step here:
       - name: Make daemon a Python package in CI
         run: |
           find daemon -type d -exec touch {}/__init__.py \;
+
+      - name: Debug Python environment & files
+        env:
+          PYTHONPATH: ./daemon:./sdk/python/src
+        run: |
+          echo "PYTHONPATH=$PYTHONPATH"
+          python -c "import sys; print(sys.path)"
+          ls -l daemon
+          ls -l daemon/common
 
       - name: 🧪 Run Python logger tests
         env:
@@ -268,9 +275,20 @@ jobs:
           python -m pytest test/unit/logger/test_logger.py -v
 
       - name: Build and run C++ logger tests
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/x64-linux/share
         run: |
           mkdir -p build && cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
           ctest --output-on-failure -R logger
 
+      - name: Debug test discovery
+        run: |
+          echo "Available unit tests:"
+          find test/unit -type f
+          echo "Available CTest labels:"
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          ctest -N
