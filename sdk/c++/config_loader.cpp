@@ -23,6 +23,17 @@ static void apply_defaults(std::map<std::string, ConfigValue>& config) {
     config["paths.log_dir"] = get_or("paths.log_dir", std::string("./logs"));
 }
 
+static void validate_required_fields(const std::map<std::string, ConfigValue>& config) {
+    const std::vector<std::string> required = {
+        "module.port", "environment.mode", "paths.log_dir"
+    };
+    for (const auto& key : required) {
+        if (!config.count(key)) {
+            throw std::runtime_error("Missing required config field: " + key);
+        }
+    }
+}
+
 std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepath) {
     std::map<std::string, ConfigValue> config;
     std::ifstream file(filepath);
@@ -70,5 +81,6 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
     }
 
     apply_defaults(config);
+    validate_required_fields(config);
     return config;
 }
