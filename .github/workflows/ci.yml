@@ -205,41 +205,48 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
           make -j$(nproc)
           ctest --output-on-failure
-
+            
   test-logger:
-    name: 🧪 Logger Unit Tests
-    runs-on: ubuntu-latest
-    needs: build  # optional: depends on 'build' job
-
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v3
-
-      - name: ⚙️ Install system + Python dependencies
-        run: |
-          sudo apt update && sudo apt install -y \
-            build-essential cmake g++ make \
-            libspdlog-dev libgtest-dev \
-            python3 python3-pip
-
-          pip3 install pytest python-json-logger
-
-      - name: 🧪 Run Python logger tests
-        run: |
-          pytest test/unit/logger/test_logger.py -v
-
-      - name: 🧪 Compile and Run C++ logger tests
-        run: |
-          mkdir -p build && cd build
-          cmake ..
-          make -j$(nproc)
-          ctest --output-on-failure -R logger
-
-      - name: 🔍 Debug test discovery
-        run: |
-          echo "Available unit tests:"
-          find test/unit -type f
-          echo "Available CTest labels:"
-          mkdir -p build && cd build
-          cmake ..
-          ctest -N
+      name: 🧪 Logger Unit Tests
+      runs-on: ubuntu-latest
+      needs: build
+    
+      steps:
+        - name: 📥 Checkout repository
+          uses: actions/checkout@v3
+    
+        - name: Install system dependencies
+          run: |
+            sudo apt update && sudo apt install -y build-essential cmake g++ make python3 python3-pip
+    
+        - name: Setup vcpkg and install dependencies
+          run: |
+            git clone https://github.com/microsoft/vcpkg.git
+            ./vcpkg/bootstrap-vcpkg.sh
+            ./vcpkg/vcpkg install spdlog gtest
+            echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
+            echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+    
+        - name: Install Python dependencies
+          run: |
+            pip3 install pytest python-json-logger
+    
+        - name: Run Python logger tests
+          run: |
+            pytest test/unit/logger/test_logger.py -v
+    
+        - name: Build and run C++ logger tests
+          run: |
+            mkdir -p build && cd build
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+            make -j$(nproc)
+            ctest --output-on-failure -R logger
+    
+        - name: Debug test discovery
+          run: |
+            echo "Available unit tests:"
+            find test/unit -type f
+            echo "Available CTest labels:"
+            mkdir -p build && cd build
+            cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+            ctest -N
