@@ -48,11 +48,14 @@ jobs:
 
     - name: 📦 Install dependencies via vcpkg
       run: |
-        git clone https://github.com/microsoft/vcpkg.git
+        if [ ! -d vcpkg ]; then
+          git clone https://github.com/microsoft/vcpkg.git
+        fi
         ./vcpkg/bootstrap-vcpkg.sh
         ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog
         echo "VCPKG_INCLUDE_DIR=$(pwd)/vcpkg/installed/x64-linux/include" >> $GITHUB_ENV
         echo "VCPKG_LIB_DIR=$(pwd)/vcpkg/installed/x64-linux/lib" >> $GITHUB_ENV
+
 
     - name: 🐍 Install Python dependencies
       run: |
