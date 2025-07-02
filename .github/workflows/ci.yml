@@ -269,6 +269,10 @@ jobs:
           touch daemon/control_plane/__init__.py
           touch daemon/data_plane/__init__.py
           touch daemon/ipc/__init__.py
+      
+      - name: Prepare daemon package for Python tests
+        run: |
+          find daemon -type d -exec touch {}/__init__.py \;
 
       - name: 🧪 Run Python logger tests
         env:
