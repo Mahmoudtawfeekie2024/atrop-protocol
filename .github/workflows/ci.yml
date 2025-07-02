@@ -204,11 +204,12 @@ jobs:
           cd build
           cmake .. \
             -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake \
-            -DCMAKE_PREFIX_PATH=$(pwd)/../vcpkg/installed/x64-linux/share
+            -DCMAKE_PREFIX_PATH="$(pwd)/../vcpkg/installed/x64-linux/share/spdlog"
           make -j$(nproc)
           echo "=== Running C++ Unit Tests ==="
           ctest --output-on-failure
           echo "=== C++ Unit Tests Completed ==="
+
 
 
   test-logger:
