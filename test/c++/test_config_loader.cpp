@@ -5,10 +5,28 @@
 #include <string>
 #include <map>
 #include <variant>
-#include <iostream>
+#include <sstream>
 #include "config_loader.hpp"
 
 using namespace std;
+
+// Utility: Extract value from variant with optional type conversion
+template<typename T>
+T get_variant_as(const ConfigValue& v) {
+    if (std::holds_alternative<T>(v)) {
+        return std::get<T>(v);
+    }
+    if constexpr (std::is_same_v<T, int>) {
+        if (std::holds_alternative<std::string>(v)) {
+            return std::stoi(std::get<std::string>(v));
+        }
+    } else if constexpr (std::is_same_v<T, std::string>) {
+        if (std::holds_alternative<int>(v)) {
+            return std::to_string(std::get<int>(v));
+        }
+    }
+    throw std::runtime_error("Incompatible type in variant");
+}
 
 class ConfigLoaderTest : public ::testing::Test {
 protected:
@@ -43,18 +61,6 @@ paths.log_dir: "/tmp/logs"
         write_file("missing.json", R"({
             "module.timeout": 30
         })");
-    }
-
-    template <typename T>
-    T get_variant_as(const ConfigValue& value) {
-        return std::visit([](auto&& val) -> T {
-            using U = std::decay_t<decltype(val)>;
-            if constexpr (std::is_convertible_v<U, T>) {
-                return static_cast<T>(val);
-            } else {
-                throw std::runtime_error("Incompatible type in variant");
-            }
-        }, value);
     }
 };
 
