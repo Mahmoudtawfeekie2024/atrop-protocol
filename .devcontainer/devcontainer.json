@@ -19,7 +19,10 @@
   "settings": {
     "terminal.integrated.defaultProfile.linux": "bash",
     "python.defaultInterpreterPath": "/usr/local/bin/python",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "/workspaces/ATROP/sdk/python/src"
+    }
   },
   "extensions": [
     "ms-python.python",
