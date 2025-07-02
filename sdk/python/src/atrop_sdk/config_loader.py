@@ -24,13 +24,15 @@ def load_config(config_path):
     if not os.path.exists(config_path):
         raise ConfigLoaderError(f"Configuration file does not exist: {config_path}")
 
+    ext = os.path.splitext(config_path)[1].lower()
+
     try:
         with open(config_path, "r") as f:
-            if config_path.endswith(".json"):
+            if ext == ".json":
                 return json.load(f)
-            elif config_path.endswith((".yaml", ".yml")):
+            elif ext in [".yaml", ".yml"]:
                 return yaml.safe_load(f)
             else:
-                raise ConfigLoaderError("Unsupported file extension. Use .json or .yaml.")
+                raise ConfigLoaderError(f"Unsupported file extension '{ext}'. Use .json or .yaml.")
     except Exception as e:
         raise ConfigLoaderError(f"Failed to load configuration: {e}")
