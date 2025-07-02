@@ -1,60 +1,52 @@
 #include <gtest/gtest.h>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <map>
-#include <variant>
+#include "config_loader.hpp"
+#include <filesystem>
 #include <iostream>
 
-#include "config_loader.hpp"
+namespace fs = std::filesystem;
 
 class ConfigLoaderTest : public ::testing::Test {
 protected:
     std::string base_dir = "test/unit/config";
 
-    std::string path(const std::string& filename) {
-        return base_dir + "/" + filename;
+    std::string path(const std::string& file) {
+        return (fs::path(base_dir) / file).string();
     }
 
-    std::string to_string(const ConfigValue& value) {
-        return std::visit([](auto&& arg) -> std::string {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, std::string>) return arg;
-            else if constexpr (std::is_same_v<T, int>) return std::to_string(arg);
-            else if constexpr (std::is_same_v<T, double>) return std::to_string(arg);
-            else if constexpr (std::is_same_v<T, bool>) return arg ? "true" : "false";
-            else return "UNKNOWN";
-        }, value);
+    void expect_config_value(const std::map<std::string, ConfigValue>& config, const std::string& key, const ConfigValue& expected) {
+        ASSERT_TRUE(config.count(key)) << "Missing key: " << key;
+        std::visit([&](const auto& actual_val) {
+            EXPECT_EQ(actual_val, std::get<decltype(actual_val)>(expected)) << "Key: " << key;
+        }, config.at(key));
     }
 };
 
 TEST_F(ConfigLoaderTest, ValidJSONLoadsSuccessfully) {
     auto config = ConfigLoader::load(path("valid.json"));
-    EXPECT_EQ(std::get<int>(config["module.port"]), 9000);
-    EXPECT_EQ(to_string(config["environment.mode"]), "prod");
-    EXPECT_EQ(to_string(config["paths.log_dir"]), "/var/log/atrop");
+    std::cout << "[CONFIG] Successfully loaded and validated: " << path("valid.json") << std::endl;
+    expect_config_value(config, "module.port", 9000);
+    expect_config_value(config, "environment.mode", std::string("prod"));
+    expect_config_value(config, "paths.log_dir", std::string("/var/log/atrop"));
 }
 
 TEST_F(ConfigLoaderTest, ValidYAMLLoadsSuccessfully) {
     auto config = ConfigLoader::load(path("valid.yaml"));
-    EXPECT_EQ(std::get<int>(config["module.timeout"]), 20);
-    EXPECT_EQ(to_string(config["module.log_level"]), "DEBUG");
+    std::cout << "[CONFIG] Successfully loaded and validated: " << path("valid.yaml") << std::endl;
+    expect_config_value(config, "module.timeout", 20);
+    expect_config_value(config, "module.log_level", std::string("DEBUG"));
 }
 
 TEST_F(ConfigLoaderTest, DefaultsAreAppliedWhenMissing) {
     auto config = ConfigLoader::load(path("missing.json"));
-    EXPECT_EQ(std::get<int>(config["module.port"]), 8080);
-    EXPECT_EQ(to_string(config["module.log_level"]), "INFO");
+    std::cout << "[CONFIG] Successfully loaded and validated: " << path("missing.json") << std::endl;
+    expect_config_value(config, "module.port", 8080);  // default
+    expect_config_value(config, "paths.model_dir", std::string("./models"));  // default
 }
 
 TEST_F(ConfigLoaderTest, ThrowsOnInvalidFormat) {
-    EXPECT_THROW({
-        ConfigLoader::load(path("invalid.json"));
-    }, std::exception);
+    EXPECT_THROW(ConfigLoader::load(path("invalid.json")), std::runtime_error);
 }
 
 TEST_F(ConfigLoaderTest, ThrowsOnNonexistentFile) {
-    EXPECT_THROW({
-        ConfigLoader::load(path("does_not_exist.yaml"));
-    }, std::exception);
+    EXPECT_THROW(ConfigLoader::load("nonexistent.json"), std::runtime_error);
 }
