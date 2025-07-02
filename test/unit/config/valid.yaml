@@ -1,0 +1,10 @@
+environment:
+  mode: prod
+module:
+  log_level: DEBUG
+  port: 9090
+  timeout: 20
+paths:
+  data_dir: /opt/data
+  log_dir: /opt/logs
+  model_dir: /opt/models
