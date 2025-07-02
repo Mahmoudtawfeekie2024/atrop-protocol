@@ -220,11 +220,13 @@ jobs:
 
       - name: Build and run C++ tests
         env:
-          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/x64-linux/share
+          VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+          VCPKG_TOOLCHAIN_FILE: ${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+          CMAKE_PREFIX_PATH: ${{ github.workspace }}/vcpkg/installed/x64-linux/share
         run: |
           mkdir -p build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
           ctest --output-on-failure
 
