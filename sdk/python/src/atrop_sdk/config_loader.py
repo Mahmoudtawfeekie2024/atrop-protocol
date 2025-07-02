@@ -26,6 +26,15 @@ def apply_defaults(cfg):
         }
     }
 
+def validate_required_fields(config):
+    """Ensure critical required fields are not missing after defaults."""
+    try:
+        _ = config["module"]["port"]
+        _ = config["environment"]["mode"]
+        _ = config["paths"]["log_dir"]
+    except KeyError as e:
+        raise ConfigLoaderError(f"Missing required config field: {e}")
+
 def load_config(config_path):
     """
     Load a JSON or YAML configuration file with default fallback.
@@ -48,15 +57,19 @@ def load_config(config_path):
         with open(config_path, "r") as f:
             if ext == ".json":
                 try:
-                    return apply_defaults(json.load(f))
+                    cfg = apply_defaults(json.load(f))
                 except json.JSONDecodeError as e:
                     raise ConfigLoaderError(f"Syntax error in JSON config: {e}")
             elif ext in [".yaml", ".yml"]:
                 try:
-                    return apply_defaults(yaml.safe_load(f))
+                    cfg = apply_defaults(yaml.safe_load(f))
                 except yaml.YAMLError as e:
                     raise ConfigLoaderError(f"Syntax error in YAML config: {e}")
             else:
                 raise ConfigLoaderError(f"Unsupported file extension '{ext}'. Use .json or .yaml.")
+
+            validate_required_fields(cfg)
+            return cfg
+
     except Exception as e:
         raise ConfigLoaderError(f"Failed to load configuration: {e}")
