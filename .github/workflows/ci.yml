@@ -262,6 +262,14 @@ jobs:
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
 
+      - name: Add __init__.py to daemon folders
+        run: |
+          touch daemon/__init__.py
+          touch daemon/common/__init__.py
+          touch daemon/control_plane/__init__.py
+          touch daemon/data_plane/__init__.py
+          touch daemon/ipc/__init__.py
+
       - name: 🧪 Run Python logger tests
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
