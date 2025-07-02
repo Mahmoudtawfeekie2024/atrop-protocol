@@ -252,6 +252,16 @@ jobs:
         run: |
           pip3 install pytest python-json-logger
 
+      - name: Debug directory and PYTHONPATH
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -l
+          echo "Contents of daemon/:"
+          ls -l daemon/
+          echo "PYTHONPATH=$PYTHONPATH"
+        env:
+          PYTHONPATH: ./daemon:./sdk/python/src
+
       - name: 🧪 Run Python logger tests
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
