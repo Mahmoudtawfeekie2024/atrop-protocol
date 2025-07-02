@@ -251,18 +251,10 @@ jobs:
         run: |
           pip3 install pytest python-json-logger
 
+      # Add this new step here:
       - name: Make daemon a Python package in CI
         run: |
           find daemon -type d -exec touch {}/__init__.py \;
-
-      - name: Debug Python environment & files
-        env:
-          PYTHONPATH: ./daemon:./sdk/python/src
-        run: |
-          echo "PYTHONPATH=$PYTHONPATH"
-          python -c "import sys; print(sys.path)"
-          ls -l daemon
-          ls -l daemon/common
 
       - name: 🧪 Run Python logger tests
         env:
@@ -277,11 +269,3 @@ jobs:
           make -j$(nproc)
           ctest --output-on-failure -R logger
 
-      - name: Debug test discovery
-        run: |
-          echo "Available unit tests:"
-          find test/unit -type f
-          echo "Available CTest labels:"
-          mkdir -p build && cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE
-          ctest -N
