@@ -1,7 +1,6 @@
-import os
 import json
-import logging
 from daemon.logger import setup_logger
+
 
 def test_text_log_format(tmp_path):
     log_file = tmp_path / "log_text.log"
