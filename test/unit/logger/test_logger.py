@@ -1,9 +1,40 @@
+import os
+import json
+import logging
 from logger import setup_logger
 
-def test_json_log_output():
-    log = setup_logger("ATROP.Test", {
+def test_text_log_format(tmp_path):
+    log_file = tmp_path / "log_text.log"
+    log = setup_logger("ATROP.TextTest", {
         "level": "DEBUG",
-        "format": "json"
+        "format": "text",
+        "file": str(log_file)
     })
-    log.info("Structured log test passed")
-    assert True
+    log.info("Text format test passed")
+
+    with open(log_file) as f:
+        lines = f.readlines()
+        assert any("Text format test passed" in line for line in lines)
+
+def test_json_log_format(tmp_path):
+    log_file = tmp_path / "log_json.log"
+    log = setup_logger("ATROP.JsonTest", {
+        "level": "INFO",
+        "format": "json",
+        "file": str(log_file)
+    })
+    log.info("JSON format test passed")
+
+    with open(log_file) as f:
+        line = json.loads(f.readline())
+        assert line["message"] == "JSON format test passed"
+        assert line["levelname"] == "INFO"
+
+def test_console_logging(capsys):
+    log = setup_logger("ATROP.ConsoleTest", {
+        "level": "WARNING",
+        "format": "text"
+    })
+    log.warning("Console warning test")
+    captured = capsys.readouterr()
+    assert "Console warning test" in captured.out
