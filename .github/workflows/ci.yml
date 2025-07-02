@@ -44,10 +44,9 @@ jobs:
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
-          echo "VCPKG_INCLUDE_DIR=$(pwd)/vcpkg/installed/x64-linux/include" >> $GITHUB_ENV
-          echo "VCPKG_LIB_DIR=$(pwd)/vcpkg/installed/x64-linux/lib" >> $GITHUB_ENV
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
       - name: 🐍 Install Python dependencies
         run: |
@@ -68,6 +67,9 @@ jobs:
         run: make check-versions
 
       - name: 🛠 Build daemon and SDK
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: make
 
       - name: 🧪 Run Python unit tests
@@ -212,6 +214,7 @@ jobs:
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |
@@ -221,7 +224,7 @@ jobs:
       - name: Build and run C++ tests
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
-          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/x64-linux/share
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           mkdir -p build
           cd build
@@ -247,9 +250,10 @@ jobs:
           rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install spdlog gtest yaml-cpp
+          ./vcpkg/vcpkg install spdlog gtest
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
       - name: Install Python dependencies
         run: |
@@ -277,7 +281,7 @@ jobs:
       - name: Build and run C++ logger tests
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
-          CMAKE_PREFIX_PATH: ${{ env.VCPKG_ROOT }}/installed/x64-linux/share
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           mkdir -p build && cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
@@ -285,6 +289,9 @@ jobs:
           ctest --output-on-failure -R logger
 
       - name: Debug test discovery
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           echo "Available unit tests:"
           find test/unit -type f
