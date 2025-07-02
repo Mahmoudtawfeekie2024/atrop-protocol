@@ -1,8 +1,5 @@
 #include <iostream>
-#include <map>
-#include <string>
-#include <variant>
-#include "../../sdk/c++/config_loader.hpp"  // Adjust path if build system supports different include roots
+#include <config_loader.hpp>  // Clean, thanks to target_include_directories
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -20,6 +17,5 @@ int main() {
         return 1;
     }
 
-    // TODO: Use config to drive AI policies, startup modes, etc.
     return 0;
 }
