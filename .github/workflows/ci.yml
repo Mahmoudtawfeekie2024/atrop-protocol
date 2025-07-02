@@ -21,33 +21,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      vcpkg-root: ${{ steps.vcpkg-root.outputs.vcpkg-root }}
+      vcpkg-toolchain-file: ${{ steps.vcpkg-toolchain-file.outputs.vcpkg-toolchain-file }}
+      cmake-prefix-path: ${{ steps.cmake-prefix-path.outputs.cmake-prefix-path }}
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install system dependencies
-        run: |
-          sudo apt update && sudo apt install -y \
-            build-essential cmake g++ make protobuf-compiler protobuf-compiler-grpc libgtest-dev python3-pip
+      - id: vcpkg-root
+        run: echo "vcpkg-root=$(pwd)/vcpkg" >> $GITHUB_OUTPUT
 
-      - name: Install dependencies via vcpkg
+      - id: vcpkg-toolchain-file
+        run: echo "vcpkg-toolchain-file=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_OUTPUT
+
+      - id: cmake-prefix-path
+        run: echo "cmake-prefix-path=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_OUTPUT
+
+      - name: Install system deps & vcpkg deps
         run: |
+          sudo apt update
+          sudo apt install -y build-essential cmake g++ make protobuf-compiler protobuf-compiler-grpc libgtest-dev python3-pip
           rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
-          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
       - name: Build daemon and SDK
         env:
-          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
-          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
+          VCPKG_TOOLCHAIN_FILE: ${{ steps.vcpkg-toolchain-file.outputs.vcpkg-toolchain-file }}
+          CMAKE_PREFIX_PATH: ${{ steps.cmake-prefix-path.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           cmake --build . -- -j$(nproc)
+
 
       - name: Install Python dependencies
         run: |
@@ -183,27 +192,33 @@ jobs:
           ctest --output-on-failure
 
   test-logger:
-    name: Logger Unit Tests
     runs-on: ubuntu-latest
     needs: build
+    env:
+      VCPKG_ROOT: ${{ needs.build.outputs.vcpkg-root }}
+      VCPKG_TOOLCHAIN_FILE: ${{ needs.build.outputs.vcpkg-toolchain-file }}
+      CMAKE_PREFIX_PATH: ${{ needs.build.outputs.cmake-prefix-path }}
+
     steps:
       - uses: actions/checkout@v3
+
+      - name: Use cached vcpkg (optional: restore cache for speed)
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.VCPKG_ROOT }}
+          key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg/installed/vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-
+
       - name: Install system dependencies
-        run: |
-          sudo apt update && sudo apt install -y build-essential cmake g++ make python3 python3-pip
-      - name: Setup vcpkg and install dependencies
-        run: |
-          rm -rf vcpkg
-          git clone https://github.com/microsoft/vcpkg.git
-          ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install spdlog gtest
-          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
+        run: sudo apt update && sudo apt install -y build-essential cmake g++ make python3 python3-pip
+
       - name: Install Python dependencies
         run: pip3 install pytest python-json-logger
+
       - name: Make daemon a Python package in CI
         run: find daemon -type d -exec touch {}/__init__.py \;
+
       - name: Debug Python environment & files
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
@@ -212,10 +227,12 @@ jobs:
           python -c "import sys; print(sys.path)"
           ls -l daemon
           ls -l daemon/common
+
       - name: Run Python logger tests
         env:
           PYTHONPATH: ./daemon:./sdk/python/src
         run: python -m pytest test/unit/logger/test_logger.py -v
+
       - name: Build and run C++ logger tests
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
@@ -225,6 +242,7 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
           ctest --output-on-failure -R logger
+
       - name: Debug test discovery
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
