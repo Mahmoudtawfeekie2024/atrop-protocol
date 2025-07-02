@@ -28,15 +28,7 @@ jobs:
 
     - name: ⚙️ Install system dependencies
       run: |
-        sudo apt update && sudo apt install -y \
-          build-essential \
-          cmake \
-          g++ \
-          make \
-          protobuf-compiler \
-          protobuf-compiler-grpc \
-          libgtest-dev \
-          python3-pip
+        sudo apt update && sudo apt install -y           build-essential           cmake           g++           make           protobuf-compiler           protobuf-compiler-grpc           libgtest-dev           python3-pip
 
     - name: 📦 Install dependencies via vcpkg
       run: |
@@ -139,10 +131,7 @@ jobs:
 
     - name: 🔍 Lint Dockerfile with hadolint + config
       run: |
-        docker run --rm \
-          -v "${{ github.workspace }}:/mnt" \
-          hadolint/hadolint \
-          hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
+        docker run --rm           -v "${{ github.workspace }}:/mnt"           hadolint/hadolint           hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
 
     - name: 🛠 Test Docker Build
       run: docker build -t atrop-dev .
@@ -172,6 +161,20 @@ jobs:
           echo "=== Running Python Unit Tests ==="
           pytest test/unit/ --maxfail=5 --disable-warnings --tb=short
           echo "=== Python Unit Tests Completed ==="
+- name: ✅ T1-07: Valid JSON config load
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_json_load"
+
+      - name: ✅ T1-07: Valid YAML config load
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_yaml_load"
+
+      - name: ⚠️ T1-07: Missing required field
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_missing_required_field"
+
+      - name: ❌ T1-07: Invalid format file
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_invalid_format"
+
+      - name: 🌱 T1-07: Environment variable override
+        run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_env_override"
 
   cpp-test:
     name: 🧪 C++ Unit Tests
