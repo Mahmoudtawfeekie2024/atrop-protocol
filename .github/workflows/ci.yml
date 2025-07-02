@@ -34,7 +34,7 @@ jobs:
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         ./vcpkg/bootstrap-vcpkg.sh
-        ./vcpkg/vcpkg install nlohmann-json yaml-cpp
+        ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog
         echo "VCPKG_INCLUDE_DIR=$(pwd)/vcpkg/installed/x64-linux/include" >> $GITHUB_ENV
         echo "VCPKG_LIB_DIR=$(pwd)/vcpkg/installed/x64-linux/lib" >> $GITHUB_ENV
 
