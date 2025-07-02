@@ -35,6 +35,37 @@ g++ main.cpp -o atrop_control
 
 ---
 
+## 🧾 Configuration Loader
+
+The control plane uses the internal `ConfigLoader` module to load structured configuration at startup.
+
+Supported formats:
+- `.json` (preferred)
+- `.yaml` / `.yml`
+
+Default lookup order:
+1. `ATROP_CONFIG_PATH` environment variable (if set)
+2. Local `config.json` / `config.yaml`
+3. Built-in fallback defaults
+
+Typical keys:
+```json
+{
+  "module.port": 9090,
+  "module.timeout": 30,
+  "paths.log_dir": "/var/log/atrop",
+  "environment.mode": "dev"
+}
+```
+
+Missing required fields may result in:
+- an error
+- or fallback to sensible defaults (e.g., port 8080)
+
+The loaded config is validated and logged on startup.
+
+---
+
 ## Future Integration
 
 - Intent policy compiler (IPU)
