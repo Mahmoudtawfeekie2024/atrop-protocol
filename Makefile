@@ -4,6 +4,8 @@
 CXX := g++
 CXXFLAGS := -std=c++17 -Wall -O2 --coverage
 LDFLAGS := -lgtest -lgtest_main -pthread --coverage
+INCLUDES := -Isdk/c++
+LIBS := -lyaml-cpp -lnlohmann_json
 
 # Submodules
 DAEMON_SRC := daemon/control_plane/main.cpp daemon/data_plane/main.cpp daemon/ipc/main.cpp
@@ -18,8 +20,8 @@ IPC_BIN := $(BUILD_DIR)/ipc
 all: $(CONTROL_PLANE_BIN) $(DATA_PLANE_BIN) $(IPC_BIN) $(SDK_CPP_BIN)
 
 # Build rules for each binary
-$(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -o $@
+$(CONTROL_PLANE_BIN): daemon/control_plane/main.cpp sdk/c++/config_loader.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@ $(LIBS)
 
 $(DATA_PLANE_BIN): daemon/data_plane/main.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $< -o $@
@@ -65,19 +67,12 @@ generate-grpc-stubs: generate-grpc-py generate-grpc-cpp
 generate-grpc-py:
 	@echo "🧪 Generating Python gRPC stubs..."
 	mkdir -p $(GRPC_PY_OUT)
-	python -m grpc_tools.protoc -I$(PROTO_DIR) \
-	  --python_out=$(GRPC_PY_OUT) \
-	  --grpc_python_out=$(GRPC_PY_OUT) \
-	  $(PROTO_FILE)
+	python -m grpc_tools.protoc -I$(PROTO_DIR) 	  --python_out=$(GRPC_PY_OUT) 	  --grpc_python_out=$(GRPC_PY_OUT) 	  $(PROTO_FILE)
 
 generate-grpc-cpp:
 	@echo "⚙️ Generating C++ gRPC stubs..."
 	mkdir -p $(GRPC_CPP_OUT)
-	protoc -I$(PROTO_DIR) \
-	  --cpp_out=$(GRPC_CPP_OUT) \
-	  --grpc_out=$(GRPC_CPP_OUT) \
-	  --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` \
-	  $(PROTO_FILE)
+	protoc -I$(PROTO_DIR) 	  --cpp_out=$(GRPC_CPP_OUT) 	  --grpc_out=$(GRPC_CPP_OUT) 	  --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` 	  $(PROTO_FILE)
 
 clean-grpc:
 	rm -rf $(GRPC_PY_OUT) $(GRPC_CPP_OUT)
@@ -110,8 +105,7 @@ test: test-python test-cpp
 
 coverage-cpp:
 	@echo "🧪 Generating C++ code coverage report..."
-	@gcovr -r . --exclude-directories test --exclude build/ \
-	    --html --html-details -o build/coverage.html
+	@gcovr -r . --exclude-directories test --exclude build/ 	    --html --html-details -o build/coverage.html
 	@echo "📄 Coverage report saved to: build/coverage.html"
 
 .PHONY: generate-grpc-stubs test-python test-cpp test coverage-cpp clean all
@@ -127,15 +121,11 @@ MIN_PROTOC_VER = 3.15
 check-versions:
 	@echo "🔍 Checking toolchain versions..."
 
-	@python3 -c 'import sys; assert sys.version_info >= tuple(map(int, "$(MIN_PYTHON_VER)".split("."))), \
-		f"❌ Python >= $(MIN_PYTHON_VER) required, found: {sys.version}"' && \
-		echo "✅ Python version OK"
+	@python3 -c 'import sys; assert sys.version_info >= tuple(map(int, "$(MIN_PYTHON_VER)".split("."))), 		f"❌ Python >= $(MIN_PYTHON_VER) required, found: {sys.version}"' && 		echo "✅ Python version OK"
 
-	@$(CXX) --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+' | \
-		awk '{ if ($$1 < $(MIN_GPP_VER)) { print "❌ g++ >= $(MIN_GPP_VER) required, found: "$$1; exit 1 } else { print "✅ g++ version OK" }}'
+	@$(CXX) --version | head -n1 | grep -Eo '[0-9]+\.[0-9]+' | 		awk '{ if ($$1 < $(MIN_GPP_VER)) { print "❌ g++ >= $(MIN_GPP_VER) required, found: "$$1; exit 1 } else { print "✅ g++ version OK" }}'
 
-	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | \
-		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
+	@protoc --version | grep -Eo '[0-9]+\.[0-9]+' | 		awk '{ if ($$1 < $(MIN_PROTOC_VER)) { print "❌ protoc >= $(MIN_PROTOC_VER) required, found: "$$1; exit 1 } else { print "✅ protoc version OK" }}'
 
 # Run ATROP Control Plane Binary (example CLI entrypoint)
 run:
@@ -143,7 +133,6 @@ run:
 	./$(CONTROL_PLANE_BIN)
 
 .PHONY: run
-
 
 # ================================
 # ✅ Optional Enhancements Section
