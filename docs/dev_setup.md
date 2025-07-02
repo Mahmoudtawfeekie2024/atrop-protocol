@@ -79,6 +79,72 @@ Use this if you don’t want to install toolchains locally.
 
 ---
 
+
+## 🧾 Configuration File Usage
+
+ATROP supports JSON and YAML configuration files that are automatically loaded at runtime by each daemon via the internal `ConfigLoader`.
+
+### ✅ Supported Formats
+
+- `.json` (preferred)
+- `.yaml` / `.yml` (optional)
+
+### 📍 Default Lookup Paths
+
+Each daemon searches for configuration in this order:
+
+1. File path from environment variable (e.g., `ATROP_CONFIG_PATH`)
+2. Default location: `config.json` or `config.yaml` in working directory
+3. Hardcoded fallback defaults
+
+### 🧠 Structure Expectations
+
+Configuration keys follow a **dot notation** flattened schema:
+
+```json
+{
+  "module.port": 9090,
+  "module.timeout": 30,
+  "paths.log_dir": "/var/log/atrop",
+  "environment.mode": "dev"
+}
+```
+
+The same applies to YAML:
+
+```yaml
+module.port: 9090
+module.timeout: 30
+paths.log_dir: "/var/log/atrop"
+environment.mode: "dev"
+```
+
+### 🛑 Required Fields
+
+Some daemons require specific fields:
+
+| Field            | Description                     |
+|------------------|---------------------------------|
+| `module.port`    | Port number for server/listener |
+| `paths.log_dir`  | Directory to write logs         |
+
+Missing required fields trigger either:
+- fallback to a default, or
+- error exit (based on daemon logic)
+
+### ⚠️ Validation Behavior
+
+- If config is **invalid JSON/YAML**, the process fails.
+- If config is **missing**, daemons fallback to embedded defaults.
+- All configs are validated on startup and logged.
+
+### 📁 Example Files
+
+Sample configs live under:
+
+```bash
+test/unit/sdk/config/
+```
 ## 🧩 Minimum Tool Versions
 
 | Tool / Dependency      | Minimum Version | Notes                                 |
