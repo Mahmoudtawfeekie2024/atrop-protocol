@@ -89,7 +89,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
@@ -111,6 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install clang-tidy
         run: sudo apt update && sudo apt install -y clang-tidy
 
@@ -128,19 +131,22 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v3
-      - name: Debug check for .hadolint.yaml
+
+      - name: 🧪 Debug check for .hadolint.yaml
         run: |
           echo "Listing root files:"
           ls -la .
           echo "Printing .hadolint.yaml:"
           cat .hadolint.yaml || echo "⚠️ Not found"
-      - name: Lint Dockerfile with hadolint + config
+
+      - name: 🔍 Lint Dockerfile with hadolint + config
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/mnt" \
             hadolint/hadolint \
             hadolint /mnt/Dockerfile --config /mnt/.hadolint.yaml --no-fail
-      - name: Test Docker Build
+
+      - name: 🛠 Test Docker Build
         run: docker build -t atrop-dev .
 
   python-test:
@@ -148,7 +154,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
@@ -165,19 +173,19 @@ jobs:
           pytest test/unit/ -v || echo "❌ Some tests failed, but continuing for debug"
           echo "=== Python Unit Tests Completed ==="
 
-      - name: Valid JSON config load
+      - name: ✅ Valid JSON config load
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_json_load"
 
-      - name: Valid YAML config load
+      - name: ✅ Valid YAML config load
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_valid_yaml_load"
 
-      - name: Missing required field
+      - name: ⚠️ Missing required field
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_missing_required_field"
 
-      - name: Invalid format file
+      - name: ❌ Invalid format file
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_invalid_json_format"
 
-      - name: Environment variable override
+      - name: 🌱 Environment variable override
         if: ${{ always() }}
         run: python -m pytest test/unit/sdk/test_config_loader.py -k "test_env_override"
 
@@ -230,7 +238,7 @@ jobs:
           rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install spdlog gtest
+          ./vcpkg/vcpkg install spdlog gtest yaml-cpp nlohmann-json
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
