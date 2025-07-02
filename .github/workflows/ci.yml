@@ -234,3 +234,12 @@ jobs:
           cmake ..
           make -j$(nproc)
           ctest --output-on-failure -R logger
+
+      - name: 🔍 Debug test discovery
+        run: |
+          echo "Available unit tests:"
+          find test/unit -type f
+          echo "Available CTest labels:"
+          mkdir -p build && cd build
+          cmake ..
+          ctest -N
