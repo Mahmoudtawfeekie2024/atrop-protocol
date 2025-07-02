@@ -1,0 +1,10 @@
+module:
+  port: 9000
+  timeout: 20
+  log_level: DEBUG
+environment:
+  mode: prod
+paths:
+  model_dir: /models
+  data_dir: /data
+  log_dir: /var/log/atrop
