@@ -1,18 +1,27 @@
-# sdk/c++/CMakeLists.txt
+cmake_minimum_required(VERSION 3.10)
+project(ATROP_CppTests)
 
-# Ensure vcpkg packages are properly imported
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(yaml-cpp CONFIG REQUIRED)
+include(CTest)
+enable_testing()
 
-add_library(config_loader config_loader.cpp)
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
 
-target_include_directories(config_loader
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
+# ✅ Test 1: test_sample
+add_executable(test_sample test_sample.cpp)
+target_link_libraries(test_sample
+  ${GTEST_LIBRARIES}
+  GTest::gtest_main
+  pthread
 )
+add_test(NAME test_sample COMMAND test_sample)
 
-target_link_libraries(config_loader
-    PRIVATE
-        yaml-cpp
-        nlohmann_json::nlohmann_json
+# ✅ Test 2: test_config_loader
+add_executable(test_config_loader test_config_loader.cpp)
+target_link_libraries(test_config_loader
+  config_loader               # ✅ Link your SDK implementation
+  ${GTEST_LIBRARIES}
+  GTest::gtest_main
+  pthread
 )
+add_test(NAME test_config_loader COMMAND test_config_loader)
