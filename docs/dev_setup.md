@@ -334,3 +334,97 @@ Shell launches with common developer aliases preloaded (`ll`, `gs`, `cdsdk`, `at
 | `clang-format` missing                   | Add `apt install clang-format` or run it from host OS                    |
 | Tests show “no tests collected”          | Make sure test filenames start with `test_` and functions use `def test_`|
 
+---
+
+## 📝 Sample Log Outputs
+
+This section demonstrates what the default ATROP log outputs look like for both **console** and **file-based** operation, using the default logger setup. You’ll see both plain-text and JSON formats, so you can recognize healthy daemon startup, errors, and debug events.
+
+---
+
+#### 🟩 Example: Console Log (Text Format)
+
+```
+[2025-07-02 17:23:04] [INFO] [ATROP.Control] Logger initialized from 'config.yaml'
+[2025-07-02 17:23:04] [INFO] [ATROP.Control] Log Level: 'info', Format: 'text', File: 'atrop-control.log'
+[2025-07-02 17:23:04] [INFO] [ATROP.Control] Selected Config:
+[2025-07-02 17:23:04] [INFO] [ATROP.Control]   Port: 9090
+[2025-07-02 17:23:04] [INFO] [ATROP.Control]   Timeout: 30
+[2025-07-02 17:23:04] [INFO] [ATROP.Control]   Environment: dev
+[2025-07-02 17:23:04] [DEBUG] [ATROP.Control] Full Configuration:
+[2025-07-02 17:23:04] [DEBUG] [ATROP.Control]   module.port: 9090
+[2025-07-02 17:23:04] [DEBUG] [ATROP.Control]   module.timeout: 30
+[2025-07-02 17:23:04] [DEBUG] [ATROP.Control]   environment.mode: dev
+```
+
+---
+
+#### 🟦 Example: File Log (JSON Format)
+
+```
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"Logger initialized from 'config.yaml'"}
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"Log Level: 'info', Format: 'json', File: 'atrop-control.log'"}
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"Selected Config:"}
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"  Port: 9090"}
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"  Timeout: 30"}
+{"ts":"2025-07-02 17:23:04","level":"INFO","name":"ATROP.Control","msg":"  Environment: dev"}
+{"ts":"2025-07-02 17:23:04","level":"DEBUG","name":"ATROP.Control","msg":"Full Configuration:"}
+{"ts":"2025-07-02 17:23:04","level":"DEBUG","name":"ATROP.Control","msg":"  module.port: 9090"}
+{"ts":"2025-07-02 17:23:04","level":"DEBUG","name":"ATROP.Control","msg":"  module.timeout: 30"}
+{"ts":"2025-07-02 17:23:04","level":"DEBUG","name":"ATROP.Control","msg":"  environment.mode: dev"}
+```
+
+---
+
+#### 🟧 Example: Startup Error Log
+
+```
+[2025-07-02 17:23:05] [ERROR] [ATROP.Control] Startup failed due to config error: [CONFIG] Error loading config: config.yaml not found
+```
+
+#### 📄 Sample Output Logs
+
+When running unit tests and CI builds for ATROP, expect output logs that confirm tool versions, build stages, and test statuses.
+
+###### ✅ Python Unit Test Log
+
+```text
+=== Running Python Unit Tests ===
+test/unit/logger/test_logger.py::test_text_log_format PASSED
+test/unit/logger/test_logger.py::test_json_log_format PASSED
+test/unit/logger/test_logger.py::test_console_logging PASSED
+=== Python Unit Tests Completed ===
+```
+
+###### ✅ C++ Build Output (CI)
+
+```text
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Found Threads: TRUE
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/runner/work/atrop-protocol/build
+```
+
+###### ✅ gRPC Stub Generation
+
+```text
+🧪 Generating Python gRPC stubs...
+sdk/grpc/build_py/atrop_pb2.py
+sdk/grpc/build_py/atrop_pb2_grpc.py
+
+⚙️ Generating C++ gRPC stubs...
+sdk/grpc/build_cpp/atrop.pb.cc
+sdk/grpc/build_cpp/atrop.grpc.pb.cc
+```
+
+###### ⚠️ Sample Warning
+
+```text
+/home/runner/.local/lib/python3.12/site-packages/pythonjsonlogger/jsonlogger.py:11:
+DeprecationWarning: pythonjsonlogger.jsonlogger has been moved to pythonjsonlogger.json
+```
+
+---
+
