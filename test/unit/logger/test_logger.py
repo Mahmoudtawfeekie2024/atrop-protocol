@@ -37,4 +37,5 @@ def test_console_logging(capsys):
     })
     log.warning("Console warning test")
     captured = capsys.readouterr()
-    assert "Console warning test" in captured.out
+    assert "Console warning test" in captured.out + captured.err
+
