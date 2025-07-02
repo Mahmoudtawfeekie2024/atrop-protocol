@@ -19,3 +19,6 @@ protobuf>=4.23
 
 # === Version Control Hooks (Optional) ===
 pre-commit>=3.0
+
+# === Config Parsing ===
+pyyaml>=6.0
