@@ -231,7 +231,9 @@ jobs:
           run: |
             pip3 install pytest python-json-logger
     
-        - name: Run Python logger tests
+        - name: 🧪 Run Python logger tests
+          env:
+            PYTHONPATH: ./daemon:./sdk/python/src
           run: |
             pytest test/unit/logger/test_logger.py -v
     
