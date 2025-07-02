@@ -9,6 +9,20 @@
 
 using json = nlohmann::json;
 
+static void apply_defaults(std::map<std::string, ConfigValue>& config) {
+    auto get_or = [&](const std::string& key, ConfigValue fallback) {
+        return config.count(key) ? config[key] : fallback;
+    };
+
+    config["module.port"] = get_or("module.port", 8080);
+    config["module.timeout"] = get_or("module.timeout", 10);
+    config["module.log_level"] = get_or("module.log_level", std::string("INFO"));
+    config["environment.mode"] = get_or("environment.mode", std::string("dev"));
+    config["paths.model_dir"] = get_or("paths.model_dir", std::string("./models"));
+    config["paths.data_dir"] = get_or("paths.data_dir", std::string("./data"));
+    config["paths.log_dir"] = get_or("paths.log_dir", std::string("./logs"));
+}
+
 std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepath) {
     std::map<std::string, ConfigValue> config;
     std::ifstream file(filepath);
@@ -51,5 +65,6 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         throw std::runtime_error("Unsupported config file extension: " + ext);
     }
 
+    apply_defaults(config);
     return config;
 }
