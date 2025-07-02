@@ -16,7 +16,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         throw std::runtime_error("Config file not found: " + filepath);
     }
 
-    if (filepath.ends_with(".json")) {
+    if (filepath.size() >= 5 && filepath.substr(filepath.size() - 5) == ".json") {
         json j;
         file >> j;
         for (auto& [key, value] : j.items()) {
@@ -27,13 +27,14 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
             else throw std::runtime_error("Unsupported JSON value for key: " + key);
         }
     }
-    else if (filepath.ends_with(".yaml") || filepath.ends_with(".yml")) {
+    else if ((filepath.size() >= 5 && filepath.substr(filepath.size() - 5) == ".yaml") ||
+             (filepath.size() >= 4 && filepath.substr(filepath.size() - 4) == ".yml")) {
         YAML::Node y = YAML::Load(file);
         for (auto it = y.begin(); it != y.end(); ++it) {
             std::string key = it->first.as<std::string>();
             YAML::Node val = it->second;
             if (val.IsScalar()) {
-                config[key] = val.as<std::string>();  // Keep as string to simplify
+                config[key] = val.as<std::string>();
             } else {
                 throw std::runtime_error("Unsupported YAML value type for key: " + key);
             }
