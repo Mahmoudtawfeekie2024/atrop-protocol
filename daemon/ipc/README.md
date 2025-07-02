@@ -69,6 +69,7 @@ Missing required fields result in fallback defaults or startup failure (if criti
 ```
 
 See `test/unit/sdk/config/` for more examples.
+
 ---
 © 2025 Mahmoud Tawfeek – For conceptual demonstration of ATROP architecture only.
 ---
