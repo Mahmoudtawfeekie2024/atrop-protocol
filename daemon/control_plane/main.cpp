@@ -2,8 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>     // Clean, thanks to target_include_directories
-#include <logger.hpp>            // Add this header
+#include <config_loader.hpp>     // From: atrop/common/config_loader.*
+#include <logger.hpp>            // From: atrop/common/logger.*
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -12,16 +12,31 @@ int main() {
         const std::string config_path = "config.yaml";
         auto config = ConfigLoader::load(config_path);
 
-        // Load logging settings
-        std::string log_level = std::get<std::string>(config["module.log_level"]);
-        std::string log_file = "atrop-control.log";  // Optional: get from config too
+        // --- Logging config ---
+        std::string log_level = "info";
+        std::string log_format = "text";
+        std::string log_file = "atrop-control.log";
 
+        if (config.count("module.log_level"))
+            log_level = std::get<std::string>(config["module.log_level"]);
+
+        if (config.count("module.log_format"))
+            log_format = std::get<std::string>(config["module.log_format"]);
+
+        if (config.count("module.log_file"))
+            log_file = std::get<std::string>(config["module.log_file"]);
+
+        // --- Initialize logger based on config ---
         atrop::Logger::init("ATROP.Control", log_level, log_file);
+        if (log_format == "json") {
+            atrop::Logger::get()->set_pattern(R"({"ts":"%Y-%m-%d %H:%M:%S","level":"%l","name":"%n","msg":"%v"})");
+        }
+
         auto log = atrop::Logger::get();
+        log->info("Logger initialized from '{}'", config_path);
+        log->info("Log Level: '{}', Format: '{}', File: '{}'", log_level, log_format, log_file);
 
-        log->info("Logger initialized with level '{}'", log_level);
-        log->info("Configuration loaded from '{}'", config_path);
-
+        // --- Print config summary ---
         log->info("Selected Config:");
         log->info("  Port: {}", std::get<int>(config["module.port"]));
         log->info("  Timeout: {}", std::get<int>(config["module.timeout"]));
@@ -37,7 +52,7 @@ int main() {
     } catch (const std::exception& e) {
         std::cerr << "[CONFIG] Error loading config: " << e.what() << std::endl;
         if (auto log = atrop::Logger::get()) {
-            log->error("Failed to load config: {}", e.what());
+            log->error("Startup failed due to config error: {}", e.what());
         }
         return 1;
     }
