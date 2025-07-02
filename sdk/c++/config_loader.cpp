@@ -6,6 +6,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <algorithm>
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -82,5 +83,6 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
 
     apply_defaults(config);
     validate_required_fields(config);
+    std::cout << "[CONFIG] Successfully loaded and validated: " << filepath << std::endl;
     return config;
 }
