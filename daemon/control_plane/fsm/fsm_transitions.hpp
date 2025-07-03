@@ -4,6 +4,7 @@
 #include "state_base.hpp"
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 namespace atrop::fsm {
 
