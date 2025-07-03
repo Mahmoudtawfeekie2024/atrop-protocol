@@ -3,32 +3,17 @@ project(ATROP)
 
 enable_testing()
 
-# Find required packages (installed via vcpkg)
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)
-find_package(yaml-cpp REQUIRED)
+find_package(spdlog       REQUIRED)
+find_package(fmt          REQUIRED)
+find_package(yaml-cpp     REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(Threads      REQUIRED)
 
-# Add SDK and Test modules
+
 add_subdirectory(sdk/c++)
 add_subdirectory(test/c++)
 add_subdirectory(test/unit/logger)
+add_subdirectory(daemon)
 
-# Add control plane executable with sources
-add_executable(control_plane
-    daemon/control_plane/main.cpp
-    daemon/common/logger.cpp
-)
-
-target_include_directories(control_plane
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/sdk/c++        # for config_loader.hpp
-        ${CMAKE_SOURCE_DIR}/daemon/common  # for logger.hpp
-)
-
-target_link_libraries(control_plane
-    PRIVATE
-        config_loader
-        spdlog::spdlog
-        fmt::fmt
-        yaml-cpp
-)
+# (No add_executable or target_link_libraries for control_plane here)
+target_include_directories(ipc_daemon PRIVATE ${CMAKE_SOURCE_DIR}/sdk/c++)

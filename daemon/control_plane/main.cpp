@@ -2,15 +2,16 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>     // From: atrop/common/config_loader.*
+#include "config_loader.hpp"     // Changed: from <> to "" since it's now local
 #include "logger.hpp"           // From: atrop/common/logger.*
+
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
 
     try {
         const std::string config_path = "config.yaml";
-        auto config = ConfigLoader::load(config_path);
+        auto config = sdk::config::ConfigLoader::load(config_path);  // Added namespace
 
         // --- Logging config ---
         std::string log_level = "info";

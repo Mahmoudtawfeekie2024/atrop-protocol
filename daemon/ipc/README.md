@@ -32,11 +32,27 @@ g++ main.cpp -o atrop_ipc
 
 ---
 
-## Future Scope
+## 🔄 Message Dispatch Logic
 
-- Support for gRPC or Netlink as IPC backend
-- Add sandboxing and privilege controls
-- Integrate with systemd service supervision
+The IPC module includes a dispatch switch that routes each message type to the corresponding control-plane handler.
+
+### 🧠 Dispatch Mapping Table
+
+| Hex Code | Message Type | Routed Handler Function                   |
+|----------|--------------|-------------------------------------------|
+| `0x01`   | DISCOVERY     | `handleDiscoveryPacket(const std::vector<uint8_t>&)` |
+| `0x02`   | DECISION      | `handleDecisionPacket(const std::vector<uint8_t>&)`  |
+| `0x03`   | OBSERVATION   | `handleObservationPacket(const std::vector<uint8_t>&)`|
+
+When a message is received:
+1. The header byte is read.
+2. A switch-case routes it based on type.
+3. The associated handler stub is invoked.
+
+This logic lives in `ipc/main.cpp` and will evolve to include:
+- Packet validation
+- Source identity lookup
+- Future dispatch to FSM states
 
 ---
 
@@ -71,5 +87,5 @@ Missing required fields result in fallback defaults or startup failure (if criti
 See `test/unit/sdk/config/` for more examples.
 
 ---
+
 © 2025 Mahmoud Tawfeek – For conceptual demonstration of ATROP architecture only.
----

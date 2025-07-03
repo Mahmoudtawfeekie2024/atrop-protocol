@@ -66,6 +66,63 @@ The loaded config is validated and logged on startup.
 
 ---
 
+## 🧩 Handler Stub Files
+
+The following handler stubs represent the modular entrypoints for incoming protocol messages. These will later be extended with FSM integration, structured parsing, and inference hooks.
+
+| File Name                         | Purpose Description                                                                 |
+|----------------------------------|--------------------------------------------------------------------------------------|
+| `discovery_handler.cpp`          | Handles topology discovery packets to bootstrap neighbor awareness and state entry. |
+| `decision_handler.cpp`           | Processes AI-driven routing decisions and updates path intelligence structures.     |
+| `observation_handler.cpp`        | Handles telemetry feedback and status reports for reinforcement learning updates.   |
+
+All handler files reside in:
+
+```
+daemon/control_plane/handlers/
+```
+
+Each stub uses `LOG_INFO` for tracing and includes `TODO` and `FIXME` placeholders for future extensions:
+- Parse: **Node Identity Vector (NIV)**, **Path Intelligence Vector (PIV)**, **Intent Descriptor (IDR)**
+- Inject: **Feedback Injection Field (FIF)** (Observation only)
+- Dispatch: Finite State Machine (FSM) control signals
+
+---
+
+## 🧠 Central Header Interface
+
+A unified header file exposes the public API and constants for all ATROP packet handlers:
+
+**`atrop_packet_handlers.hpp`**
+
+```cpp
+enum AtropPacketType : uint8_t {
+    ATROP_DISCOVERY = 0x01,
+    ATROP_DECISION = 0x02,
+    ATROP_OBSERVATION = 0x03
+};
+
+namespace atrop::control_plane {
+    void handleDiscoveryPacket(const std::vector<uint8_t>& packet);
+    void handleDecisionPacket(const std::vector<uint8_t>& packet);
+    void handleObservationPacket(const std::vector<uint8_t>& packet);
+}
+```
+
+### Benefits
+
+- Easier integration in dispatch logic (e.g., `main.cpp`)
+- Avoids redundant includes (`*_handler.hpp` removed)
+- Improves clarity for test coverage
+
+Updated include statements:
+
+```cpp
+#include "atrop_packet_handlers.hpp"
+```
+
+---
+
 ## Future Integration
 
 - Intent policy compiler (IPU)

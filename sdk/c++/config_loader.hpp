@@ -1,14 +1,21 @@
-// sdk/c++/config_loader.hpp
-
 #pragma once
 
 #include <string>
 #include <map>
 #include <variant>
 
-using ConfigValue = std::variant<std::string, int, double, bool>;
+namespace sdk {
+namespace config {
+
+/// A map of config-keys to either int, bool or string
+using ConfigMap = std::map<std::string, std::variant<int, bool, std::string>>;
 
 class ConfigLoader {
 public:
-    static std::map<std::string, ConfigValue> load(const std::string& filepath);
+    /// Load JSON or YAML file from disk
+    /// \throws std::runtime_error on parse error or missing file
+    static ConfigMap load(const std::string& path);
 };
+
+} // namespace config
+} // namespace sdk
