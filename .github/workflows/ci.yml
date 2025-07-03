@@ -108,7 +108,7 @@ jobs:
           ruff check tools/ || echo "❌ tools/ failed"
           ruff check test/ || echo "❌ test/ failed"
           ruff check models/ || echo "❌ models/ failed"
-
+  
   cpp-lint:
     name: 🧼 C++ Lint (clang-tidy)
     runs-on: ubuntu-latest
@@ -116,16 +116,96 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Install clang-tidy
-        run: sudo apt update && sudo apt install -y clang-tidy
+      - name: Install clang-tidy and build dependencies
+        run: |
+          sudo apt update && sudo apt install -y \
+            clang-tidy \
+            build-essential \
+            cmake \
+            g++
+      
+      - name: Setup vcpkg for compilation database
+        run: |
+          rm -rf vcpkg
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+      
+      - name: Generate compilation database
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          make -j$(nproc)
+      
+      - name: Create .clang-tidy config
+        run: |
+          cat > .clang-tidy << EOF
+          Checks: >
+            -*,
+            bugprone-*,
+            clang-analyzer-*,
+            cppcoreguidelines-*,
+            modernize-*,
+            performance-*,
+            portability-*,
+            readability-*,
+            -modernize-use-trailing-return-type,
+            -cppcoreguidelines-avoid-magic-numbers,
+            -readability-magic-numbers,
+            -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+            -cppcoreguidelines-pro-bounds-array-to-pointer-decay
+          WarningsAsErrors: ''
+          HeaderFilterRegex: '(daemon|sdk)/.*\.(h|hpp)$'
+          FormatStyle: none
+          EOF
       
       - name: Run clang-tidy on daemon/control_plane
         run: |
-          find daemon/control_plane -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
+          echo "🔍 Running clang-tidy on daemon/control_plane..."
+          find daemon/control_plane -name '*.cpp' -type f | while read -r file; do
+            echo "Checking: $file"
+            clang-tidy "$file" \
+              -p build \
+              --config-file=.clang-tidy \
+              --quiet || echo "⚠️ Issues found in $file"
+          done
       
       - name: Run clang-tidy on daemon/ipc
         run: |
-          find daemon/ipc -name '*.cpp' -print0 | xargs -0 -n1 clang-tidy --quiet || true
+          echo "🔍 Running clang-tidy on daemon/ipc..."
+          if [ -d "daemon/ipc" ]; then
+            find daemon/ipc -name '*.cpp' -type f | while read -r file; do
+              echo "Checking: $file"
+              clang-tidy "$file" \
+                -p build \
+                --config-file=.clang-tidy \
+                --quiet || echo "⚠️ Issues found in $file"
+            done
+          else
+            echo "ℹ️ daemon/ipc directory not found, skipping"
+          fi
+      
+      - name: Run clang-tidy on SDK
+        run: |
+          echo "🔍 Running clang-tidy on SDK..."
+          find sdk/c++ -name '*.cpp' -type f | while read -r file; do
+            echo "Checking: $file"
+            clang-tidy "$file" \
+              -p build \
+              --config-file=.clang-tidy \
+              --quiet || echo "⚠️ Issues found in $file"
+          done
+      
+      - name: Summary
+        run: |
+          echo "✅ clang-tidy analysis completed"
+          echo "Note: Warnings are reported but don't fail the build"
 
   docker-lint:
     name: 🐳 Dockerfile Lint & Build Check
