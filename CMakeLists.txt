@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 project(ATROP LANGUAGES CXX)
 
-# for vcpkg users this is passed in via -DCMAKE_TOOLCHAIN_FILE, etc.
+# enable ctest() / make test
 enable_testing()
 
-# common dependencies (all provided by vcpkg or system)
+# ------------------------------------------------------------------------------
+# 1) Pull in global deps (via vcpkg or system)
+# ------------------------------------------------------------------------------
+
 find_package(spdlog        REQUIRED)
 find_package(fmt           REQUIRED)
 find_package(yaml-cpp      REQUIRED)
@@ -12,23 +15,36 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(Threads       REQUIRED)
 find_package(GTest         CONFIG REQUIRED)
 
-# 1) build our SDK (config_loader) library
+# ------------------------------------------------------------------------------
+# 2) Build our SDK (config_loader) from sdk/c++
+# ------------------------------------------------------------------------------
 add_subdirectory(sdk/c++)
 
-# 2) build any tests you have
+# ------------------------------------------------------------------------------
+# 3) Build unit/integration tests
+# ------------------------------------------------------------------------------
 add_subdirectory(test/c++)
 add_subdirectory(test/unit/logger)
 
-# 3) build our control_plane binary
+# ------------------------------------------------------------------------------
+# 4) Build the control_plane executable
+# ------------------------------------------------------------------------------
 add_executable(control_plane
-    daemon/control_plane/main.cpp
-    daemon/common/logger.cpp
+  daemon/control_plane/main.cpp
+  daemon/common/logger.cpp
 )
 
-# 4) link it against the SDK + other deps
+# expose the SDK include path so `#include <config_loader.hpp>` works
+target_include_directories(control_plane
+  PRIVATE
+    ${CMAKE_SOURCE_DIR}/sdk/c++
+    ${CMAKE_SOURCE_DIR}/daemon/common
+)
+
+# link the SDK & other libs
 target_link_libraries(control_plane
   PRIVATE
-    sdk::config_loader    # <- brings in config_loader.hpp + json+yaml+threads
+    sdk::config_loader
     spdlog::spdlog
     fmt::fmt
     yaml-cpp::yaml-cpp
