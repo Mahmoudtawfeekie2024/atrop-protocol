@@ -3,7 +3,7 @@
 
 #include "state_base.hpp"
 #include "logger.hpp"
-#include "sdk/c++/config_loader.hpp"
+#include "../common/logger.hpp"
 
 namespace atrop::fsm {
 
