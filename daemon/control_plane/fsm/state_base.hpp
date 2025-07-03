@@ -1,20 +1,22 @@
 #pragma once
 
-#include "state_base.hpp"
-#include <string>
-
 namespace atrop::fsm {
 
-class EnforceState : public State {
-public:
-    EnforceState();
-    FSMStateID id() const override;
-    void enter() override;
-    void exit() override;
-    FSMStateID handle_event(FSMEvent event) override;
+enum class FSMStateID {
+    // Define your state IDs here
+};
 
-private:
-    std::string enforce_mode_;
+enum class FSMEvent {
+    // Define your event types here
+};
+
+class State {
+public:
+    virtual FSMStateID id() const = 0;
+    virtual void enter() = 0;
+    virtual void exit() = 0;
+    virtual FSMStateID handle_event(FSMEvent event) = 0;
+    virtual ~State() = default;
 };
 
 } // namespace atrop::fsm
