@@ -1,11 +1,12 @@
 #include "state_learn.hpp"
+#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
 LearnState::LearnState() {
-    auto config = sdk::load_config("config.yaml");
-    model_type_ = config["ml"]["model_type"].as<std::string>();
-    pretrained_ = config["ml"]["use_pretrained"].as<bool>();
+    auto config = sdk::config::ConfigLoader::load("config.yaml");
+    model_type_ = std::get<std::string>(config.at("ml.model_type"));
+    pretrained_ = std::get<bool>(config.at("ml.use_pretrained"));
 }
 
 FSMStateID LearnState::id() const {
@@ -14,10 +15,10 @@ FSMStateID LearnState::id() const {
 
 void LearnState::enter() {
     LOG_INFO("Entering LEARN state");
-    LOG_INFO("Model type: {}, pretrained: {}", model_type_, pretrained_);
+    LOG_INFO("Model type: {}, Use pretrained: {}", model_type_, pretrained_);
 
     // 🔧 Stub: Model training or loading
-    LOG_DEBUG("[STUB] Executing model preparation phase");
+    LOG_DEBUG("[STUB] Training or loading ML model");
 }
 
 void LearnState::exit() {
@@ -25,8 +26,8 @@ void LearnState::exit() {
 }
 
 FSMStateID LearnState::handle_event(FSMEvent event) {
-    if (event == FSMEvent::InferenceReady) {
-        LOG_INFO("Trigger received: InferenceReady → transition to DECIDE");
+    if (event == FSMEvent::TrainingComplete) {
+        LOG_INFO("Training complete → transition to DECIDE");
         return FSMStateID::DECIDE;
     }
     return FSMStateID::LEARN;
