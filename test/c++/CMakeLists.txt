@@ -44,7 +44,7 @@ add_test(NAME test_config_loader COMMAND test_config_loader)
 # ✅ Test: Handler Stubs
 # --------------------------------------------------------
 add_executable(test_handlers
-    ../unit/protocol/test_handlers.cpp
+    ${CMAKE_SOURCE_DIR}/test/unit/protocol/test_handlers.cpp
     ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/discovery_handler.cpp
     ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/decision_handler.cpp
     ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/observation_handler.cpp
@@ -57,6 +57,7 @@ target_include_directories(test_handlers PRIVATE
     ${CMAKE_SOURCE_DIR}/daemon/control_plane
     ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers
     ${CMAKE_SOURCE_DIR}/sdk/c++
+    ${CMAKE_SOURCE_DIR}/test/unit/protocol
 )
 
 target_link_libraries(test_handlers
