@@ -18,6 +18,7 @@ add_subdirectory(sdk/c++)
 # ---- Tests ----
 add_subdirectory(test/c++)
 add_subdirectory(test/unit/logger)
+add_subdirectory(daemon)
 
 # ---- Control plane executable ----
 add_executable(control_plane
