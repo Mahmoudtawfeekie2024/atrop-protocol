@@ -87,6 +87,7 @@ jobs:
   python-lint:
     name: 🧼 Python Lint
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -111,6 +112,7 @@ jobs:
   cpp-lint:
     name: 🧼 C++ Lint (clang-tidy)
     runs-on: ubuntu-latest
+    needs: build    
     steps:
       - uses: actions/checkout@v3
 
@@ -129,6 +131,7 @@ jobs:
     name: 🐳 Dockerfile Lint & Build Check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -152,6 +155,7 @@ jobs:
   python-test:
     name: 🧪 Python Unit Tests
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -192,6 +196,7 @@ jobs:
   cpp-test:
     name: 🧪 C++ Unit Tests
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - uses: actions/checkout@v3
 
@@ -289,7 +294,7 @@ jobs:
   handler-test:
     name: 🧪 Handler Stub Tests (C++)
     runs-on: ubuntu-latest
-    needs: build
+    needs: cpp-test
 
     steps:
       - uses: actions/checkout@v3
@@ -320,3 +325,37 @@ jobs:
           cd build
           ctest --output-on-failure -R test_handlers || echo "❌ Handler tests failed (check output)"
 
+  fsm-test:
+    name: 🧪 FSM State Unit Tests
+    runs-on: ubuntu-latest
+    needs: cpp-test
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup vcpkg and install dependencies
+        run: |
+          rm -rf vcpkg
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install spdlog gtest yaml-cpp nlohmann-json
+          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
+
+      - name: Install system build tools
+        run: sudo apt update && sudo apt install -y cmake g++ libgtest-dev
+
+      - name: Build FSM test suite (from root)
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
+        run: |
+          mkdir -p build && cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          make -j$(nproc)
+
+      - name: Run FSM state tests
+        run: |
+          cd build
+          ctest --output-on-failure -R FSMStateUnitTests || echo "❌ FSM tests failed (check output)"
