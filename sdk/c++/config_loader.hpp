@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <fstream>
 
-// you’ll need to add nlohmann/json and yaml-cpp to your vcpkg/CMakeLists dependencies
+// youll need to add nlohmann/json and yaml-cpp to your vcpkg/CMakeLists dependencies
 #include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
 
