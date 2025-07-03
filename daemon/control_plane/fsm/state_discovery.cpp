@@ -1,11 +1,10 @@
-// daemon/control_plane/fsm/state_discovery.cpp
 #include "state_discovery.hpp"
 
 namespace atrop::fsm {
 
 DiscoveryState::DiscoveryState() {
     auto config = sdk::load_config("config.yaml");
-    discovery_method_ = config["discovery"]["method"].as<std::string>();  // e.g., "passive", "active"
+    discovery_method_ = config["discovery"]["method"].as<std::string>();
 }
 
 FSMStateID DiscoveryState::id() const {
@@ -13,21 +12,17 @@ FSMStateID DiscoveryState::id() const {
 }
 
 void DiscoveryState::enter() {
-    ATROP_LOG_INFO("Entering DISCOVERY state");
-    ATROP_LOG_INFO("Discovery method: {}", discovery_method_);
-
-    // TODO: Neighbor + ATZ discovery logic here
-    // e.g., multicast probes, listening to LLDP or ATROP Hello
+    LOG_INFO("Entering DISCOVERY state");
+    LOG_INFO("Discovery method: {}", discovery_method_);
 }
 
 void DiscoveryState::exit() {
-    ATROP_LOG_INFO("Exiting DISCOVERY state");
-    // Optional cleanup if needed
+    LOG_INFO("Exiting DISCOVERY state");
 }
 
 FSMStateID DiscoveryState::handle_event(FSMEvent event) {
     if (event == FSMEvent::TrainingComplete) {
-        ATROP_LOG_INFO("Trigger received: TrainingComplete → transition to LEARN");
+        LOG_INFO("Trigger received: TrainingComplete");
         return FSMStateID::LEARN;
     }
     return FSMStateID::DISCOVERY;
