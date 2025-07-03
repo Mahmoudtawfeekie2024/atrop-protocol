@@ -1,45 +1,44 @@
-cmake_minimum_required(VERSION 3.14)
-project(atrop_sdk_config_loader LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.10)
+project(ATROP)
 
-# 1) Find dependencies
+# enable CTest for add_test() and enable_testing()
+enable_testing()
+
+# find our third-party dependencies (via vcpkg or system)
+find_package(spdlog       REQUIRED)
+find_package(fmt          REQUIRED)
+find_package(yaml-cpp     REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(yaml-cpp       CONFIG REQUIRED)
-find_package(Threads        REQUIRED)
+find_package(Threads      REQUIRED)
 
-# 2) Build the static library from our single source file
-add_library(sdk_config_loader STATIC
-  config_loader.cpp
-)
-add_library(sdk::config_loader ALIAS sdk_config_loader)
+# ---- SDK ----
+# this brings in `sdk_config_loader` + the alias `sdk::config_loader`
+add_subdirectory(sdk/c++)
 
-# 3) Public headers live in sdk/c++/include
-target_include_directories(sdk_config_loader
-  PUBLIC
-    # for in-tree builds:
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    # for installed usage:
-    $<INSTALL_INTERFACE:include/sdk>
+# ---- Tests ----
+add_subdirectory(test/c++)
+add_subdirectory(test/unit/logger)
+
+# ---- Control plane executable ----
+add_executable(control_plane
+    daemon/control_plane/main.cpp
+    daemon/common/logger.cpp
 )
 
-# 4) Link in JSON, YAML, Threads
-target_link_libraries(sdk_config_loader
-  PUBLIC
-    nlohmann_json::nlohmann_json
-    yaml-cpp::yaml-cpp
-    Threads::Threads
+target_include_directories(control_plane
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/sdk/c++/include    # for config_loader.hpp
+        ${CMAKE_SOURCE_DIR}/daemon/common      # for logger.hpp
 )
 
-# 5) Install rules so `find_package(atrop-sdk)` works
-install(TARGETS sdk_config_loader
-        EXPORT AtropSdkTargets
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
+target_link_libraries(control_plane
+    PRIVATE
+        sdk::config_loader
+        spdlog::spdlog
+        fmt::fmt
+        yaml-cpp::yaml-cpp
+        nlohmann_json::nlohmann_json
+        Threads::Threads
 )
-install(FILES include/config_loader.hpp
-        DESTINATION include/sdk
-)
-install(EXPORT AtropSdkTargets
-        NAMESPACE sdk::
-        DESTINATION lib/cmake/atrop-sdk
-)
+
+# (You can add more executables/libraries here as you expand the project)
