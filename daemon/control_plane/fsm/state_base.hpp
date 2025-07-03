@@ -1,41 +1,20 @@
-// daemon/control_plane/fsm/state_base.hpp
 #pragma once
 
+#include "state_base.hpp"
 #include <string>
-#include "../common/logger.hpp"
-#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
-enum class FSMEvent {
-    None,
-    DiscoveryComplete,
-    TrainingComplete,
-    InferenceReady,
-    AnomalyDetected,
-    ShutdownRequested
-};
-
-enum class FSMStateID {
-    INIT,
-    DISCOVERY,
-    LEARN,
-    DECIDE,
-    ENFORCE,
-    OBSERVE,
-    FEEDBACK,
-    CORRECT,
-    EXIT
-};
-
-class State {
+class EnforceState : public State {
 public:
-    virtual ~State() = default;
+    EnforceState();
+    FSMStateID id() const override;
+    void enter() override;
+    void exit() override;
+    FSMStateID handle_event(FSMEvent event) override;
 
-    virtual FSMStateID id() const = 0;
-    virtual void enter() = 0;
-    virtual void exit() = 0;
-    virtual FSMStateID handle_event(FSMEvent event) = 0;
+private:
+    std::string enforce_mode_;
 };
 
 } // namespace atrop::fsm
