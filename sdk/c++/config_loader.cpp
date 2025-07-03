@@ -28,6 +28,8 @@ ConfigMap ConfigLoader::load(const std::string& path) {
           else                         throw std::runtime_error("Unsupported JSON value type for key "+k);
       }
   }
+    return out; // <-- Add this line
+}
   }
   else if(ext == "yaml" || ext == "yml") {
     YAML::Node doc = YAML::Load(in);
