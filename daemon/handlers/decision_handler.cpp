@@ -6,7 +6,7 @@ namespace atrop {
 namespace control_plane {
 
 void handleDecisionPacket(const std::vector<uint8_t>& packet) {
-    LOG_INFO("Received DECISION packet");
+    LOG_INFO("Received DECISION packet for policy scope from mock_node_id=NODE-01");
 
     // TODO: Extract Path Intelligence Vector (PIV)
     // TODO: Extract Intent Descriptor (IDR)
