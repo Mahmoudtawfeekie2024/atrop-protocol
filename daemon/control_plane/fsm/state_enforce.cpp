@@ -1,10 +1,11 @@
 #include "state_enforce.hpp"
+#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
 EnforceState::EnforceState() {
-    auto config = sdk::load_config("config.yaml");
-    enforce_mode_ = config["enforcement"]["mode"].as<std::string>();
+    auto config = sdk::config::ConfigLoader::load("config.yaml");
+    enforce_mode_ = config.at("enforcement.mode");
 }
 
 FSMStateID EnforceState::id() const {
@@ -15,8 +16,8 @@ void EnforceState::enter() {
     LOG_INFO("Entering ENFORCE state");
     LOG_INFO("Enforcement mode: {}", enforce_mode_);
 
-    // 🔧 Stub: Push policy to forwarding pipeline
-    LOG_DEBUG("[STUB] Injecting decisions into routing enforcement hooks");
+    // 🔧 Stub: Apply enforcement policy
+    LOG_DEBUG("[STUB] Applying enforcement policy");
 }
 
 void EnforceState::exit() {
@@ -24,8 +25,8 @@ void EnforceState::exit() {
 }
 
 FSMStateID EnforceState::handle_event(FSMEvent event) {
-    if (event == FSMEvent::None) {
-        LOG_INFO("Transitioning from ENFORCE → OBSERVE");
+    if (event == FSMEvent::EnforcementComplete) {
+        LOG_INFO("Enforcement complete → transition to OBSERVE");
         return FSMStateID::OBSERVE;
     }
     return FSMStateID::ENFORCE;
