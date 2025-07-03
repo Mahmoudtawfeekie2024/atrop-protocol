@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>     // From: atrop/common/config_loader.*
+#include "config_loader.hpp"     // Changed: from <> to "" since it's now local
 #include "logger.hpp"           // From: atrop/common/logger.*
+
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
