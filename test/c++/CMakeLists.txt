@@ -29,13 +29,15 @@ target_link_libraries(test_config_loader
 )
 
 add_test(NAME test_config_loader COMMAND test_config_loader)
-
 # --------------------------------------------------------
 # ATROP Handler Stubs Test
 # --------------------------------------------------------
 
 add_executable(test_handlers
     ../unit/protocol/test_handlers.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/discovery_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/decision_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers/observation_handler.cpp
 )
 
 target_include_directories(test_handlers PRIVATE
@@ -52,3 +54,6 @@ target_link_libraries(test_handlers
     pthread
     yaml-cpp::yaml-cpp
 )
+
+add_test(NAME test_handlers COMMAND test_handlers)
+
