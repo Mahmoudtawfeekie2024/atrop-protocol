@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include "atrop_packet_handlers.hpp"
 
 namespace atrop {
 namespace control_plane {
