@@ -11,7 +11,7 @@ int main() {
 
     try {
         const std::string config_path = "config.yaml";
-        auto config = ConfigLoader::load(config_path);
+        auto config = sdk::config::ConfigLoader::load(config_path);  // Added namespace
 
         // --- Logging config ---
         std::string log_level = "info";
