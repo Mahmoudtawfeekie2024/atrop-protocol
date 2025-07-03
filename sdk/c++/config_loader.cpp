@@ -1,5 +1,3 @@
-// sdk/c++/config_loader.cpp
-
 #include "config_loader.hpp"
 #include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
@@ -9,6 +7,7 @@
 #include <iostream>
 
 using json = nlohmann::json;
+using sdk::ConfigValue;  // <-- Fix #1: Bring ConfigValue into scope
 
 static void apply_defaults(std::map<std::string, ConfigValue>& config) {
     auto get_or = [&](const std::string& key, ConfigValue fallback) {
@@ -59,6 +58,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 throw std::runtime_error("Config JSON must be an object");
             }
 
+            // Fix #2: Use iterator and explicit key extraction
             for (auto it = j.begin(); it != j.end(); ++it) {
                 const std::string key = it.key();
                 const auto& value = it.value();
@@ -85,6 +85,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 if (val.IsScalar()) {
                     config[key] = val.as<std::string>();
                 }
+                // Nested configs ignored intentionally
             }
         } else {
             throw std::runtime_error("Unsupported config file extension: " + ext);
