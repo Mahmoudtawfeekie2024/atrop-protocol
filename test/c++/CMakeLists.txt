@@ -35,27 +35,28 @@ target_link_libraries(test_sample
 )
 add_test(NAME test_sample COMMAND test_sample)
 
-# ──────────────────────────────────────────────────────────────────────────────
+# 
 # 4) Config Loader Tests
 #
 #    - We must include the SDK headers so that <config_loader.hpp> is found.
-#    - We link the `config_loader` library (which must be defined in your
-#      sdk/c++/CMakeLists.txt via add_library(config_loader ...)).
-# ──────────────────────────────────────────────────────────────────────────────
+#    - We link the `sdk_config_loader` library (correct library name).
+# 
 add_executable(test_config_loader
   test_config_loader.cpp
 )
 target_include_directories(test_config_loader
   PRIVATE
     ${CMAKE_SOURCE_DIR}/sdk/c++/include
+    ${CMAKE_SOURCE_DIR}/sdk/c++  # Also include the legacy header location
 )
 target_link_libraries(test_config_loader
   PRIVATE
-    config_loader          # your SDK library
+    sdk_config_loader      # Correct library name from sdk/c++/CMakeLists.txt
     GTest::gtest_main
     Threads::Threads
 )
 add_test(NAME test_config_loader COMMAND test_config_loader)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 5) Handler-stubs Test
