@@ -16,10 +16,10 @@ void ExitState::enter() {
 }
 
 void ExitState::exit() {
-    LOG_INFO("Exiting EXIT state (should not happen — terminal state)");
+    LOG_INFO("Exiting EXIT state (should not happen  terminal state)");
 }
 
 FSMStateID ExitState::handle_event(FSMEvent) {
-    LOG_WARN("EXIT state is terminal — ignoring events");
+    LOG_WARN("EXIT state is terminal  ignoring events");
     return FSMStateID::EXIT;
 }
