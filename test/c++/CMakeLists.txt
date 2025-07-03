@@ -50,4 +50,5 @@ target_link_libraries(test_handlers
     gtest
     gtest_main
     pthread
+    yaml-cpp::yaml-cpp
 )
