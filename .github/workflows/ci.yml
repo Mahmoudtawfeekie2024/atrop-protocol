@@ -306,16 +306,17 @@ jobs:
       - name: Install system build tools
         run: sudo apt update && sudo apt install -y cmake g++ libgtest-dev
 
-      - name: Build handler test suite
+      - name: Build handler test suite (from root)
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
           CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           mkdir -p build && cd build
-          cmake ../test/unit/c++ -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make -j$(nproc)
 
       - name: Run handler tests
         run: |
           cd build
-          ./test_handlers || echo "❌ Handler tests failed (check output)"
+          ctest --output-on-failure -R test_handlers || echo "❌ Handler tests failed (check output)"
+
