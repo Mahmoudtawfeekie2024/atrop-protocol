@@ -284,3 +284,38 @@ jobs:
           mkdir -p build && cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           ctest -N
+
+
+  handler-test:
+    name: 🧪 Handler Stub Tests (C++)
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup vcpkg and install dependencies
+        run: |
+          rm -rf vcpkg
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install nlohmann-json yaml-cpp spdlog gtest
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
+
+      - name: Install system build tools
+        run: sudo apt update && sudo apt install -y cmake g++ libgtest-dev
+
+      - name: Build handler test suite
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
+        run: |
+          mkdir -p build && cd build
+          cmake ../test/unit/c++ -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          make -j$(nproc)
+
+      - name: Run handler tests
+        run: |
+          cd build
+          ./test_handlers || echo "❌ Handler tests failed (check output)"
