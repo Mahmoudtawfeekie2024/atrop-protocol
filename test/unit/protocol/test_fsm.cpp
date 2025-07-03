@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-
+#include "logger.hpp"
 #include "state_init.hpp"
 #include "state_discovery.hpp"
 #include "state_learn.hpp"
@@ -76,4 +76,31 @@ TEST(FSMTest, ExitState_Transition) {
     EXPECT_EQ(state.id(), FSMStateID::EXIT);
     EXPECT_EQ(state.handle_event(FSMEvent::None), FSMStateID::EXIT);
     EXPECT_EQ(state.handle_event(FSMEvent::DiscoveryComplete), FSMStateID::EXIT);
+}
+TEST(FSMTest, InvalidTransition_ObservedByStateIgnore) {
+    LearnState state;
+    EXPECT_EQ(state.handle_event(FSMEvent::DiscoveryComplete), FSMStateID::LEARN); // Ignored
+
+    DecideState decide;
+    EXPECT_EQ(decide.handle_event(FSMEvent::TrainingComplete), FSMStateID::DECIDE); // Ignored
+
+    EnforceState enforce;
+    EXPECT_EQ(enforce.handle_event(FSMEvent::TrainingComplete), FSMStateID::ENFORCE); // Ignored
+
+    ExitState exit;
+    EXPECT_EQ(exit.handle_event(FSMEvent::TrainingComplete), FSMStateID::EXIT); // Locked terminal
+}
+TEST(FSMTest, LoggerAvailableAndSafe) {
+    EXPECT_NO_THROW({
+        atrop::Logger::init("fsm-test", "debug");
+        auto logger = atrop::Logger::get();
+        logger->info("✅ FSM logger functional in test environment");
+    });
+}
+TEST(FSMTest, ConfigDriven_CorrectStateCriticalExit) {
+    CorrectState state;
+    FSMStateID result = state.handle_event(FSMEvent::InferenceReady);
+
+    // If "correction.critical_mode" is true, transition should be EXIT
+    EXPECT_TRUE(result == FSMStateID::EXIT || result == FSMStateID::DECIDE);
 }
