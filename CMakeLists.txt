@@ -27,13 +27,13 @@ add_executable(control_plane
 
 target_include_directories(control_plane
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/sdk/c++/include    # for config_loader.hpp
-        ${CMAKE_SOURCE_DIR}/daemon/common      # for logger.hpp
+        ${CMAKE_SOURCE_DIR}/sdk/c++              # Changed: removed /include
+        ${CMAKE_SOURCE_DIR}/daemon/common        # for logger.hpp
 )
 
 target_link_libraries(control_plane
     PRIVATE
-        sdk::config_loader
+        sdk_config_loader                        # Changed: use actual library name
         spdlog::spdlog
         fmt::fmt
         yaml-cpp::yaml-cpp
