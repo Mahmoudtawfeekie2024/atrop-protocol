@@ -2,8 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include "sdk/c++/config_loader.hpp"
-// ... rest of your includes and code
+#include "config_loader.hpp"
 
 int main() {
     std::cout << "ATROP IPC Daemon starting..." << std::endl;
