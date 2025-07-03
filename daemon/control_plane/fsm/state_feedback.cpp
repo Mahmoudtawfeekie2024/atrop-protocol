@@ -5,8 +5,8 @@ namespace atrop::fsm {
 
 FeedbackState::FeedbackState() {
     auto config = sdk::config::ConfigLoader::load("config.yaml");
-    confidence_threshold_ = std::get<double>(config.at("feedback.min_confidence"));
-    feedback_enabled_ = std::get<bool>(config.at("feedback.enabled"));
+    confidence_threshold_ = std::stod(config.at("feedback.min_confidence"));
+    feedback_enabled_ = (config.at("feedback.enabled") == "true" || config.at("feedback.enabled") == "1");
 }
 
 FSMStateID FeedbackState::id() const {
