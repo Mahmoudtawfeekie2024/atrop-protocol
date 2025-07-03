@@ -54,17 +54,29 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         if (ext == ".json") {
             json j;
             file >> j;
-            for (auto& [key, value] : j.items()) {
+
+            if (!j.is_object()) {
+                throw std::runtime_error("Config JSON must be an object with key-value pairs.");
+            }
+
+            for (auto it = j.begin(); it != j.end(); ++it) {
+                const std::string key = it.key();
+                const auto& value = it.value();
+
                 if (value.is_string()) config[key] = value.get<std::string>();
                 else if (value.is_boolean()) config[key] = value.get<bool>();
                 else if (value.is_number_integer()) config[key] = value.get<int>();
                 else if (value.is_number_float()) config[key] = value.get<double>();
                 else throw std::runtime_error("Unsupported JSON value for key: " + key);
             }
+
         } else if (ext == ".yaml" || ext == ".yml") {
             YAML::Node y = YAML::LoadFile(filepath);
 
-            // Flatten only top-level scalars for legacy config path
+            // ✅ Only top-level scalar keys are loaded into config map.
+            // ❗️Nested mappings/sequences are skipped intentionally.
+            // These can be parsed directly by consuming modules (e.g., FSM) using raw YAML::Node.
+
             for (auto it = y.begin(); it != y.end(); ++it) {
                 std::string key = it->first.as<std::string>();
                 YAML::Node val = it->second;
@@ -72,8 +84,9 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 if (val.IsScalar()) {
                     config[key] = val.as<std::string>();
                 }
-                // Nested configs are skipped here (handled by FSM via YAML::Node directly)
+                // else: nested maps/lists are ignored by default
             }
+
         } else {
             throw std::runtime_error("Unsupported config file extension: " + ext);
         }
