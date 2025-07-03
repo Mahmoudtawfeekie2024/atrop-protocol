@@ -1,40 +1,45 @@
 cmake_minimum_required(VERSION 3.14)
-project(ATROP LANGUAGES CXX)
+project(atrop_sdk_config_loader LANGUAGES CXX)
 
-# enable `ctest` / `make test`
-enable_testing()
-
-# 1) find dependencies (via vcpkg or system)
-find_package(spdlog        REQUIRED)
-find_package(fmt           REQUIRED)
-find_package(yaml-cpp      REQUIRED)
+# 1) Find dependencies
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(Threads       REQUIRED)
-find_package(GTest         CONFIG REQUIRED)
+find_package(yaml-cpp       CONFIG REQUIRED)
+find_package(Threads        REQUIRED)
 
-# 2) build our SDK
-add_subdirectory(sdk/c++)
-
-# 3) build our control‐plane binary
-add_executable(control_plane
-  daemon/control_plane/main.cpp
-  daemon/common/logger.cpp
+# 2) Build the static library from our single source file
+add_library(sdk_config_loader STATIC
+  config_loader.cpp
 )
-target_link_libraries(control_plane
-  PRIVATE
-    sdk::config_loader      # ← our SDK alias
-    spdlog::spdlog
-    fmt::fmt
+add_library(sdk::config_loader ALIAS sdk_config_loader)
+
+# 3) Public headers live in sdk/c++/include
+target_include_directories(sdk_config_loader
+  PUBLIC
+    # for in-tree builds:
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    # for installed usage:
+    $<INSTALL_INTERFACE:include/sdk>
+)
+
+# 4) Link in JSON, YAML, Threads
+target_link_libraries(sdk_config_loader
+  PUBLIC
+    nlohmann_json::nlohmann_json
     yaml-cpp::yaml-cpp
     Threads::Threads
 )
-# the SDK EXPORT already makes its include dir visible,
-# so we only need to expose our own headers here:
-target_include_directories(control_plane
-  PRIVATE
-    ${CMAKE_SOURCE_DIR}/daemon/common
-)
 
-# 4) build all tests
-add_subdirectory(test/c++)
-add_subdirectory(test/unit/logger)
+# 5) Install rules so `find_package(atrop-sdk)` works
+install(TARGETS sdk_config_loader
+        EXPORT AtropSdkTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
+install(FILES include/config_loader.hpp
+        DESTINATION include/sdk
+)
+install(EXPORT AtropSdkTargets
+        NAMESPACE sdk::
+        DESTINATION lib/cmake/atrop-sdk
+)
