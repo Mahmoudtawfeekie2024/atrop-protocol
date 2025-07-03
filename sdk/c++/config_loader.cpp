@@ -61,20 +61,20 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 else if (value.is_number_float()) config[key] = value.get<double>();
                 else throw std::runtime_error("Unsupported JSON value for key: " + key);
             }
-        }
-        else if (ext == ".yaml" || ext == ".yml") {
-            YAML::Node y = YAML::Load(file);
+        } else if (ext == ".yaml" || ext == ".yml") {
+            YAML::Node y = YAML::LoadFile(filepath);
+
+            // Flatten only top-level scalars for legacy config path
             for (auto it = y.begin(); it != y.end(); ++it) {
                 std::string key = it->first.as<std::string>();
                 YAML::Node val = it->second;
+
                 if (val.IsScalar()) {
                     config[key] = val.as<std::string>();
-                } else {
-                    throw std::runtime_error("Unsupported YAML value type for key: " + key);
                 }
+                // Nested configs are skipped here (handled by FSM via YAML::Node directly)
             }
-        }
-        else {
+        } else {
             throw std::runtime_error("Unsupported config file extension: " + ext);
         }
     } catch (const std::exception& e) {
