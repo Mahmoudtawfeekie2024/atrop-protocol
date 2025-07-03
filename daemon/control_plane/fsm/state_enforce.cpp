@@ -25,9 +25,9 @@ void EnforceState::exit() {
 }
 
 FSMStateID EnforceState::handle_event(FSMEvent event) {
-    // Use a valid event here. For example, if the next state is triggered by "PolicyApplied":
-    if (event == FSMEvent::PolicyApplied) {
-        LOG_INFO("Policy applied → transition to OBSERVE");
+    // Use a valid event, e.g., transition to OBSERVE on InferenceReady
+    if (event == FSMEvent::InferenceReady) {
+        LOG_INFO("Enforcement done, transitioning to OBSERVE");
         return FSMStateID::OBSERVE;
     }
     return FSMStateID::ENFORCE;
