@@ -1,12 +1,9 @@
 #include "state_exit.hpp"
-#include "sdk/c++/config_loader.hpp"
+#include "common/logger.hpp" // Adjust path as needed
 
-namespace atrop::fsm {
+using namespace atrop::fsm;
 
-ExitState::ExitState() {
-    auto config = sdk::config::ConfigLoader::load("config.yaml");
-    secure_mode_ = std::get<bool>(config.at("exit.secure"));
-}
+ExitState::ExitState() : secure_mode_(false) {}
 
 FSMStateID ExitState::id() const {
     return FSMStateID::EXIT;
@@ -15,8 +12,6 @@ FSMStateID ExitState::id() const {
 void ExitState::enter() {
     LOG_INFO("Entering EXIT state");
     LOG_INFO("Secure mode: {}", secure_mode_);
-
-    // 🔧 Stub: Final secure shutdown / cleanup
     LOG_DEBUG("[STUB] Flushing telemetry, terminating sessions, locking interfaces");
 }
 
@@ -28,5 +23,3 @@ FSMStateID ExitState::handle_event(FSMEvent) {
     LOG_WARN("EXIT state is terminal — ignoring events");
     return FSMStateID::EXIT;
 }
-
-} // namespace atrop::fsm
