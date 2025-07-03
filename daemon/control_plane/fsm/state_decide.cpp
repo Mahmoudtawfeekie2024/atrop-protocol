@@ -1,11 +1,12 @@
 #include "state_decide.hpp"
+#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
 DecideState::DecideState() {
-    auto config = sdk::load_config("config.yaml");
-    inference_mode_ = config["ai"]["mode"].as<std::string>();
-    policy_profile_ = config["policy"]["profile"].as<std::string>();
+    auto config = sdk::config::ConfigLoader::load("config.yaml");
+    inference_mode_ = std::get<std::string>(config.at("ai.mode"));
+    policy_profile_ = std::get<std::string>(config.at("policy.profile"));
 }
 
 FSMStateID DecideState::id() const {
