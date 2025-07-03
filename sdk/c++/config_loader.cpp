@@ -1,4 +1,6 @@
 #include "config_loader.hpp"
+#include <nlohmann/json.hpp>
+#include <yaml-cpp/yaml.h>
 
 using namespace sdk::config;
 
@@ -28,34 +30,30 @@ ConfigMap ConfigLoader::load(const std::string& path) {
           else                         throw std::runtime_error("Unsupported JSON value type for key "+k);
       }
   }
-  return out;
-}
-  }
   else if(ext == "yaml" || ext == "yml") {
-    YAML::Node doc = YAML::Load(in);
-    if(!doc.IsMap()) throw std::runtime_error("YAML root not a map");
-    for(auto it : doc) {
-      const auto& key = it.first.as<std::string>();
-      auto node = it.second;
-      if(node.IsScalar()) {
-        // try int, bool, then string
-        try {
-          out[key] = node.as<int>();
-        } catch(...) {
-          std::string s = node.as<std::string>();
-          if(s == "true" || s == "false")
-            out[key] = (s=="true");
-          else
-            out[key] = s;
-        }
+      YAML::Node doc = YAML::LoadFile(path);
+      if(!doc.IsMap()) throw std::runtime_error("YAML root not a map");
+      for(auto it : doc) {
+          const auto& key = it.first.as<std::string>();
+          auto node = it.second;
+          if(node.IsScalar()) {
+              try {
+                  out[key] = node.as<int>();
+              } catch(...) {
+                  std::string s = node.as<std::string>();
+                  if(s == "true" || s == "false")
+                      out[key] = (s=="true");
+                  else
+                      out[key] = s;
+              }
+          }
+          else {
+              throw std::runtime_error("Unsupported YAML value for key "+key);
+          }
       }
-      else {
-        throw std::runtime_error("Unsupported YAML value for key "+key);
-      }
-    }
   }
   else {
-    throw std::runtime_error("Unknown config file extension: "+ext);
+      throw std::runtime_error("Unknown config file extension: "+ext);
   }
 
   return out;
