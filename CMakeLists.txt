@@ -30,5 +30,5 @@ target_link_libraries(control_plane
         config_loader
         spdlog::spdlog
         fmt::fmt
-        yaml-cpp
+        yaml-cpp::yaml-cpp
 )
