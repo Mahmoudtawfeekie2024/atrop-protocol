@@ -14,6 +14,9 @@ FSMStateID CorrectState::id() const {
 void CorrectState::enter() {
     LOG_INFO("Entering CORRECT state");
     LOG_INFO("Critical fallback mode: {}", critical_mode_);
+
+    // 🔧 Stub: Execute rollback or emergency shutdown
+    LOG_DEBUG("[STUB] Activating fallback paths or quarantine zone logic");
 }
 
 void CorrectState::exit() {

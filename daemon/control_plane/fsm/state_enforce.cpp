@@ -14,6 +14,9 @@ FSMStateID EnforceState::id() const {
 void EnforceState::enter() {
     LOG_INFO("Entering ENFORCE state");
     LOG_INFO("Enforcement mode: {}", enforce_mode_);
+
+    // 🔧 Stub: Push policy to forwarding pipeline
+    LOG_DEBUG("[STUB] Injecting decisions into routing enforcement hooks");
 }
 
 void EnforceState::exit() {

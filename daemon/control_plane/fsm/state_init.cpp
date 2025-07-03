@@ -14,6 +14,9 @@ FSMStateID InitState::id() const {
 void InitState::enter() {
     LOG_INFO("Entering INIT state");
     LOG_INFO("Node ID: {}", node_id_);
+
+    // 🔧 Stub: Prepare model registration or update
+    LOG_DEBUG("[STUB] Initializing model metadata and agent boot ID");
 }
 
 void InitState::exit() {

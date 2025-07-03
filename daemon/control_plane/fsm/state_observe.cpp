@@ -15,6 +15,9 @@ FSMStateID ObserveState::id() const {
 void ObserveState::enter() {
     LOG_INFO("Entering OBSERVE state");
     LOG_INFO("Telemetry enabled: {}, Anomaly threshold: {}", telemetry_enabled_, anomaly_threshold_);
+
+    // 🔧 Stub: Start telemetry and anomaly monitors
+    LOG_DEBUG("[STUB] Activating real-time telemetry watchers and analytics");
 }
 
 void ObserveState::exit() {

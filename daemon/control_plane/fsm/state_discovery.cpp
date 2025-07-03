@@ -14,6 +14,9 @@ FSMStateID DiscoveryState::id() const {
 void DiscoveryState::enter() {
     LOG_INFO("Entering DISCOVERY state");
     LOG_INFO("Discovery method: {}", discovery_method_);
+
+    // 🔧 Stub: Start discovery telemetry
+    LOG_DEBUG("[STUB] Enabling passive/active discovery probes");
 }
 
 void DiscoveryState::exit() {

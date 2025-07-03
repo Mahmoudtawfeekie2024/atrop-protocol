@@ -15,6 +15,9 @@ FSMStateID DecideState::id() const {
 void DecideState::enter() {
     LOG_INFO("Entering DECIDE state");
     LOG_INFO("AI mode: {}, Policy profile: {}", inference_mode_, policy_profile_);
+
+    // 🔧 Stub: SLA and policy confidence check
+    LOG_DEBUG("[STUB] Verifying SLA metrics and AI route confidence");
 }
 
 void DecideState::exit() {

@@ -15,6 +15,9 @@ FSMStateID FeedbackState::id() const {
 void FeedbackState::enter() {
     LOG_INFO("Entering FEEDBACK state");
     LOG_INFO("Feedback enabled: {}, Min confidence: {}", feedback_enabled_, confidence_threshold_);
+
+    // 🔧 Stub: Trigger learning or intent revision
+    LOG_DEBUG("[STUB] Performing model feedback evaluation");
 }
 
 void FeedbackState::exit() {

@@ -14,6 +14,9 @@ FSMStateID ExitState::id() const {
 void ExitState::enter() {
     LOG_INFO("Entering EXIT state");
     LOG_INFO("Secure mode: {}", secure_mode_);
+
+    // 🔧 Stub: Final secure shutdown / cleanup
+    LOG_DEBUG("[STUB] Flushing telemetry, terminating sessions, locking interfaces");
 }
 
 void ExitState::exit() {

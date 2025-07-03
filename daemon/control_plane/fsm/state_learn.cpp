@@ -15,6 +15,9 @@ FSMStateID LearnState::id() const {
 void LearnState::enter() {
     LOG_INFO("Entering LEARN state");
     LOG_INFO("Model type: {}, pretrained: {}", model_type_, pretrained_);
+
+    // 🔧 Stub: Model training or loading
+    LOG_DEBUG("[STUB] Executing model preparation phase");
 }
 
 void LearnState::exit() {
