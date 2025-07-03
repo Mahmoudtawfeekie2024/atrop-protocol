@@ -2,6 +2,8 @@
 #pragma once
 
 #include <string>
+#include "../common/logger.hpp"
+#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
