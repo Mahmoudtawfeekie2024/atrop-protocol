@@ -1,10 +1,11 @@
 #include "state_exit.hpp"
+#include "sdk/c++/config_loader.hpp"
 
 namespace atrop::fsm {
 
 ExitState::ExitState() {
-    auto config = sdk::load_config("config.yaml");
-    secure_mode_ = config["exit"]["secure"].as<bool>();
+    auto config = sdk::config::ConfigLoader::load("config.yaml");
+    secure_mode_ = std::get<bool>(config.at("exit.secure"));
 }
 
 FSMStateID ExitState::id() const {
