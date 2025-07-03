@@ -11,11 +11,14 @@ enum class FSMStateID {
     OBSERVE,
     FEEDBACK,
     CORRECT,
-    EXIT // <-- Add this line
+    EXIT
 };
 
 enum class FSMEvent {
-    // Define your event types here
+    None,
+    DiscoveryComplete,
+    TrainingComplete,
+    // Add other events as needed
 };
 
 class State {
