@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>  // Clean, thanks to target_include_directories
+#include "sdk/c++/config_loader.hpp"
+// ... rest of your includes and code
 
 int main() {
     std::cout << "ATROP IPC Daemon starting..." << std::endl;
