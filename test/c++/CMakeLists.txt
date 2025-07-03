@@ -60,8 +60,8 @@ target_include_directories(test_handlers PRIVATE
 )
 
 target_link_libraries(test_handlers
-    gtest
-    gtest_main
+    GTest::gtest
+    GTest::gtest_main
     pthread
     yaml-cpp::yaml-cpp
     spdlog::spdlog
