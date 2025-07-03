@@ -3,7 +3,15 @@
 namespace atrop::fsm {
 
 enum class FSMStateID {
-    // Define your state IDs here
+    INIT,
+    DISCOVERY,
+    LEARN,
+    DECIDE,
+    ENFORCE,
+    OBSERVE,
+    FEEDBACK,
+    CORRECT,
+    EXIT // <-- Add this line
 };
 
 enum class FSMEvent {
