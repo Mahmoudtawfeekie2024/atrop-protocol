@@ -16,7 +16,8 @@ add_library(control_plane_fsm
 )
 
 add_executable(control_plane main.cpp)
-target_link_libraries(control_plane PRIVATE control_plane_fsm Threads::Threads)
+target_link_libraries(control_plane PRIVATE control_plane_fsm Threads::Threads spdlog::spdlog)
+target_link_libraries(control_plane_fsm PRIVATE spdlog::spdlog)
 
 target_include_directories(control_plane_fsm
     PRIVATE
