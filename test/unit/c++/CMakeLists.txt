@@ -12,6 +12,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/sdk/c++)
 include_directories(${CMAKE_SOURCE_DIR}/daemon/common)
 include_directories(${CMAKE_SOURCE_DIR}/daemon/control_plane/handlers)
+include_directories(${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm)
 
 # --------------------------
 # Build test_cpp (original tests)
@@ -47,3 +48,19 @@ target_link_libraries(test_handlers
 )
 
 add_test(NAME HandlerStubTests COMMAND test_handlers)
+
+# --------------------------
+# ✅ Build test_fsm
+# --------------------------
+
+add_executable(test_fsm
+    ../unit/protocol/test_fsm.cpp
+)
+
+target_link_libraries(test_fsm
+    GTest::GTest
+    GTest::Main
+    pthread
+)
+
+add_test(NAME FSMStateUnitTests COMMAND test_fsm)
