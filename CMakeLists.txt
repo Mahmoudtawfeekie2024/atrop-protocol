@@ -1,48 +1,36 @@
 cmake_minimum_required(VERSION 3.14)
-project(atrop_sdk_config_loader LANGUAGES CXX)
+project(ATROP LANGUAGES CXX)
 
-#— find our dependencies (via vcpkg or system)
-find_package(nlohmann_json  CONFIG REQUIRED)
-find_package(yaml-cpp        CONFIG REQUIRED)
-find_package(Threads         REQUIRED)
+# for vcpkg users this is passed in via -DCMAKE_TOOLCHAIN_FILE, etc.
+enable_testing()
 
-#— build the static SDK library
-add_library(sdk_config_loader STATIC
-  config_loader.cpp
+# common dependencies (all provided by vcpkg or system)
+find_package(spdlog        REQUIRED)
+find_package(fmt           REQUIRED)
+find_package(yaml-cpp      REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(Threads       REQUIRED)
+find_package(GTest         CONFIG REQUIRED)
+
+# 1) build our SDK (config_loader) library
+add_subdirectory(sdk/c++)
+
+# 2) build any tests you have
+add_subdirectory(test/c++)
+add_subdirectory(test/unit/logger)
+
+# 3) build our control_plane binary
+add_executable(control_plane
+    daemon/control_plane/main.cpp
+    daemon/common/logger.cpp
 )
 
-#— expose a clean alias for downstream
-add_library(sdk::config_loader ALIAS sdk_config_loader)
-
-#— make sure consumers can #include "config_loader.hpp"
-#   (we assume config_loader.hpp lives alongside config_loader.cpp in this folder)
-target_include_directories(sdk_config_loader
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>    # in-tree builds
-    $<INSTALL_INTERFACE:include/sdk>                   # after `make install`
-)
-
-#— link in JSON, YAML and pthread
-target_link_libraries(sdk_config_loader
-  PUBLIC
-    nlohmann_json::nlohmann_json
+# 4) link it against the SDK + other deps
+target_link_libraries(control_plane
+  PRIVATE
+    sdk::config_loader    # <- brings in config_loader.hpp + json+yaml+threads
+    spdlog::spdlog
+    fmt::fmt
     yaml-cpp::yaml-cpp
     Threads::Threads
-)
-
-#— optional install rules so you can `find_package(atrop-sdk)` after install()
-install(TARGETS sdk_config_loader
-        EXPORT AtropSdkTargets
-        ARCHIVE   DESTINATION lib
-        LIBRARY   DESTINATION lib
-        RUNTIME   DESTINATION bin
-)
-
-install(FILES config_loader.hpp
-        DESTINATION include/sdk
-)
-
-install(EXPORT AtropSdkTargets
-        NAMESPACE sdk::
-        DESTINATION lib/cmake/atrop-sdk
 )
