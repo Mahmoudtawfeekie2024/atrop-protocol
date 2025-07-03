@@ -155,7 +155,7 @@ jobs:
   python-test:
     name: 🧪 Python Unit Tests
     runs-on: ubuntu-latest
-    needs: build
+    needs: python-lint
     steps:
       - uses: actions/checkout@v3
 
@@ -196,7 +196,7 @@ jobs:
   cpp-test:
     name: 🧪 C++ Unit Tests
     runs-on: ubuntu-latest
-    needs: build
+    needs: cpp-lint
     steps:
       - uses: actions/checkout@v3
 
@@ -229,7 +229,7 @@ jobs:
   test-logger:
     name: 🧪 Logger Unit Tests
     runs-on: ubuntu-latest
-    needs: build
+    needs: cpp-test
 
     steps:
       - uses: actions/checkout@v3
