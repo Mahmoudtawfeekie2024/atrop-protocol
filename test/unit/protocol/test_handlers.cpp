@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
-#include "../../../daemon/control_plane/handlers/discovery_handler.cpp"
-#include "../../../daemon/control_plane/handlers/decision_handler.cpp"
-#include "../../../daemon/control_plane/handlers/observation_handler.cpp"
+#include "discovery_handler.hpp"
+#include "decision_handler.hpp"
+#include "observation_handler.hpp"
+
 
 TEST(HandlerStubsTest, DiscoveryHandlerRuns) {
     std::vector<uint8_t> dummy_packet = {0x01, 0xAA, 0xBB};
