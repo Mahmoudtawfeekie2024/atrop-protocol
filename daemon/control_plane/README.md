@@ -1,4 +1,3 @@
-
 # ATROP Control Plane
 
 The **ATROP Control Plane Daemon** governs the AI-assisted routing logic of the protocol. It interprets topology, service intent, and policy to make optimized routing decisions via a finite state machine (FSM).
@@ -87,6 +86,40 @@ Each stub uses `LOG_INFO` for tracing and includes `TODO` and `FIXME` placeholde
 - Parse: **Node Identity Vector (NIV)**, **Path Intelligence Vector (PIV)**, **Intent Descriptor (IDR)**
 - Inject: **Feedback Injection Field (FIF)** (Observation only)
 - Dispatch: Finite State Machine (FSM) control signals
+
+---
+
+## 🧠 Central Header Interface
+
+A unified header file exposes the public API and constants for all ATROP packet handlers:
+
+**`atrop_packet_handlers.hpp`**
+
+```cpp
+enum AtropPacketType : uint8_t {
+    ATROP_DISCOVERY = 0x01,
+    ATROP_DECISION = 0x02,
+    ATROP_OBSERVATION = 0x03
+};
+
+namespace atrop::control_plane {
+    void handleDiscoveryPacket(const std::vector<uint8_t>& packet);
+    void handleDecisionPacket(const std::vector<uint8_t>& packet);
+    void handleObservationPacket(const std::vector<uint8_t>& packet);
+}
+```
+
+### Benefits
+
+- Easier integration in dispatch logic (e.g., `main.cpp`)
+- Avoids redundant includes (`*_handler.hpp` removed)
+- Improves clarity for test coverage
+
+Updated include statements:
+
+```cpp
+#include "atrop_packet_handlers.hpp"
+```
 
 ---
 
