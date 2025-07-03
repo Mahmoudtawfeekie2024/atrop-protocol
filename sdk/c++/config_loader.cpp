@@ -14,15 +14,20 @@ ConfigMap ConfigLoader::load(const std::string& path) {
   ConfigMap out;
   auto ext = extension(path);
   if(ext == "json") {
-    nlohmann::json j;
-    in >> j;
-    if(!j.is_object()) throw std::runtime_error("JSON root not an object");
-    for(auto& [k,v] : j.items()) {
-      if(v.is_number_integer())    out[k] = v.get<int>();
-      else if(v.is_boolean())      out[k] = v.get<bool>();
-      else if(v.is_string())       out[k] = v.get<std::string>();
-      else                         throw std::runtime_error("Unsupported JSON value type for key "+k);
-    }
+      nlohmann::json j;
+      try {
+          in >> j;
+      } catch(const std::exception& e) {
+          throw std::runtime_error(std::string("JSON parse error: ") + e.what());
+      }
+      if(!j.is_object()) throw std::runtime_error("JSON root not an object");
+      for(auto& [k,v] : j.items()) {
+          if(v.is_number_integer())    out[k] = v.get<int>();
+          else if(v.is_boolean())      out[k] = v.get<bool>();
+          else if(v.is_string())       out[k] = v.get<std::string>();
+          else                         throw std::runtime_error("Unsupported JSON value type for key "+k);
+      }
+  }
   }
   else if(ext == "yaml" || ext == "yml") {
     YAML::Node doc = YAML::Load(in);
