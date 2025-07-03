@@ -5,7 +5,7 @@ namespace atrop::fsm {
 
 EnforceState::EnforceState() {
     auto config = sdk::config::ConfigLoader::load("config.yaml");
-    enforce_mode_ = config.at("enforcement.mode");
+    enforce_mode_ = std::get<std::string>(config.at("enforcement.mode"));
 }
 
 FSMStateID EnforceState::id() const {
@@ -25,8 +25,9 @@ void EnforceState::exit() {
 }
 
 FSMStateID EnforceState::handle_event(FSMEvent event) {
-    if (event == FSMEvent::EnforcementComplete) {
-        LOG_INFO("Enforcement complete → transition to OBSERVE");
+    // Use a valid event here. For example, if the next state is triggered by "PolicyApplied":
+    if (event == FSMEvent::PolicyApplied) {
+        LOG_INFO("Policy applied → transition to OBSERVE");
         return FSMStateID::OBSERVE;
     }
     return FSMStateID::ENFORCE;
