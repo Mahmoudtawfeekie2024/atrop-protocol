@@ -5,8 +5,8 @@ namespace atrop::fsm {
 
 LearnState::LearnState() {
     auto config = sdk::config::ConfigLoader::load("config.yaml");
-    model_type_ = std::get<std::string>(config.at("ml.model_type"));
-    pretrained_ = std::get<bool>(config.at("ml.use_pretrained"));
+    model_type_ = config.at("ml.model_type");
+    pretrained_ = (config.at("ml.use_pretrained") == "true" || config.at("ml.use_pretrained") == "1");
 }
 
 FSMStateID LearnState::id() const {
