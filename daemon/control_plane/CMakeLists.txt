@@ -22,11 +22,11 @@ target_link_libraries(control_plane_fsm PRIVATE spdlog::spdlog)
 target_include_directories(control_plane_fsm
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../common
-        ${CMAKE_SOURCE_DIR}/sdk/c++
+        ${CMAKE_SOURCE_DIR}
 )
 
 target_include_directories(control_plane
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../common
-        ${CMAKE_SOURCE_DIR}/sdk/c++
+        ${CMAKE_SOURCE_DIR}
 )
