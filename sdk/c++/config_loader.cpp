@@ -63,30 +63,32 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 const std::string key = it.key();
                 const auto& value = it.value();
 
-                if (value.is_string()) config[key] = value.get<std::string>();
-                else if (value.is_boolean()) config[key] = value.get<bool>();
-                else if (value.is_number_integer()) config[key] = value.get<int>();
-                else if (value.is_number_float()) config[key] = value.get<double>();
-                else throw std::runtime_error("Unsupported JSON value for key: " + key);
+                if (value.is_string()) {
+                    config[key] = value.get<std::string>();
+                } else if (value.is_boolean()) {
+                    config[key] = value.get<bool>();
+                } else if (value.is_number_integer()) {
+                    config[key] = value.get<int>();
+                } else if (value.is_number_float()) {
+                    config[key] = value.get<double>();
+                } else {
+                    throw std::runtime_error("Unsupported JSON value for key: " + key);
+                }
             }
-
         } else if (ext == ".yaml" || ext == ".yml") {
             YAML::Node y = YAML::LoadFile(filepath);
 
-            // ✅ Only top-level scalar keys are loaded into config map.
-            // ❗️Nested mappings/sequences are skipped intentionally.
-            // These can be parsed directly by consuming modules (e.g., FSM) using raw YAML::Node.
-
+            // Flatten only top-level scalars into config map
+            // Nested YAML nodes are skipped and expected to be handled by consumers
             for (auto it = y.begin(); it != y.end(); ++it) {
-                std::string key = it->first.as<std::string>();
+                const std::string key = it->first.as<std::string>();
                 YAML::Node val = it->second;
 
                 if (val.IsScalar()) {
                     config[key] = val.as<std::string>();
                 }
-                // else: nested maps/lists are ignored by default
+                // Nested structures ignored here on purpose
             }
-
         } else {
             throw std::runtime_error("Unsupported config file extension: " + ext);
         }
@@ -96,6 +98,8 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
 
     apply_defaults(config);
     validate_required_fields(config);
+
     std::cout << "[CONFIG] Successfully loaded and validated: " << filepath << std::endl;
+
     return config;
 }
