@@ -38,56 +38,21 @@ The IPC module includes a dispatch switch that routes each message type to the c
 
 ### 🧠 Dispatch Mapping Table
 
-| Hex Code | Packet Constant         | Message Type | Routed Handler Function                   |
-|----------|--------------------------|--------------|-------------------------------------------|
-| `0x01`   | `ATROP_DISCOVERY`        | DISCOVERY    | `handleDiscoveryPacket(const std::vector<uint8_t>&)` |
-| `0x02`   | `ATROP_DECISION`         | DECISION     | `handleDecisionPacket(const std::vector<uint8_t>&)`  |
-| `0x03`   | `ATROP_OBSERVATION`      | OBSERVATION  | `handleObservationPacket(const std::vector<uint8_t>&)`|
+| Hex Code | Message Type | Routed Handler Function                   |
+|----------|--------------|-------------------------------------------|
+| `0x01`   | DISCOVERY     | `handleDiscoveryPacket(const std::vector<uint8_t>&)` |
+| `0x02`   | DECISION      | `handleDecisionPacket(const std::vector<uint8_t>&)`  |
+| `0x03`   | OBSERVATION   | `handleObservationPacket(const std::vector<uint8_t>&)`|
 
 When a message is received:
 1. The header byte is read.
 2. A switch-case routes it based on type.
 3. The associated handler stub is invoked.
 
-This logic lives in `ipc/main.cpp` and is designed to evolve with:
+This logic lives in `ipc/main.cpp` and will evolve to include:
 - Packet validation
 - Source identity lookup
 - Future dispatch to FSM states
-- Logging of unrecognized types
-
----
-
-## 🧩 Central Handler Header Integration
-
-To simplify message routing and eliminate scattered includes, IPC uses a unified handler interface:
-
-📄 **`daemon/control_plane/handlers/atrop_packet_handlers.hpp`**
-
-```cpp
-enum AtropPacketType : uint8_t {
-    ATROP_DISCOVERY = 0x01,
-    ATROP_DECISION = 0x02,
-    ATROP_OBSERVATION = 0x03
-};
-
-namespace atrop::control_plane {
-    void handleDiscoveryPacket(const std::vector<uint8_t>& packet);
-    void handleDecisionPacket(const std::vector<uint8_t>& packet);
-    void handleObservationPacket(const std::vector<uint8_t>& packet);
-}
-```
-
-Instead of including each handler individually:
-```cpp
-#include "discovery_handler.hpp"
-```
-
-Use:
-```cpp
-#include "atrop_packet_handlers.hpp"
-```
-
-This enables centralized handler definitions and supports FSM-driven modularity.
 
 ---
 
