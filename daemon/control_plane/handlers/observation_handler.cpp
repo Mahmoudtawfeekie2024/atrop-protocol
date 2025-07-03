@@ -1,6 +1,9 @@
 #include "observation_handler.hpp"
 #include "logger.hpp"
 #include <iostream>
+#include <vector>
+#include <cstdint>
+
 
 namespace atrop {
 namespace control_plane {
