@@ -5,7 +5,7 @@ namespace atrop::fsm {
 
 DiscoveryState::DiscoveryState() {
     auto config = sdk::config::ConfigLoader::load("config.yaml");
-    discovery_method_ = std::get<std::string>(config.at("discovery.method"));
+    discovery_method_ = config.at("discovery.method");
 }
 
 FSMStateID DiscoveryState::id() const {
