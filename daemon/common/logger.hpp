@@ -36,7 +36,7 @@ private:
 
 } // namespace atrop
 
-// ✅ Logging macro aliases — safe for use in all daemon modules including FSM
+//  Logging macro aliases  safe for use in all daemon modules including FSM
 #define LOG_INFO(...)   ::atrop::Logger::get()->info(__VA_ARGS__)
 #define LOG_ERROR(...)  ::atrop::Logger::get()->error(__VA_ARGS__)
 #define LOG_WARN(...)   ::atrop::Logger::get()->warn(__VA_ARGS__)
