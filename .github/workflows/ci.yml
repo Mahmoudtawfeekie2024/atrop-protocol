@@ -38,7 +38,10 @@ jobs:
           echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
-      
+
+      - name: Clean build directory
+        run: rm -rf build
+
       - name: Build daemon and SDK
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
@@ -49,35 +52,42 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           cmake --build . -- -j$(nproc)
       
-      - name: 🐍 Install Python dependencies
+      - name:  Install Python dependencies
         run: |
           pip install -r dev-requirements.txt
           pip install pyyaml python-json-logger
       
-      - name: 🐍 Install SDK in editable mode
+      - name:  Install SDK in editable mode
         run: pip install -e ./sdk/python
       
-      - name: 🔍 Print Python sys.path and import check
+      - name:  Print Python sys.path and import check
         run: |
           export PYTHONPATH=$(pwd)/sdk/python
           echo "Python Path:"
           python -c "import sys; print('\n'.join(sys.path))"
-          python -c "import atrop_sdk; print('✅ SDK Import Successful:', atrop_sdk)"
+          python -c "import atrop_sdk; print(' SDK Import Successful:', atrop_sdk)"
       
-      - name: 🔍 Check tool versions (optional)
-        run: make check-versions || echo "⚠️ make check-versions not available"
+      - name:  Check tool versions (optional)
+        run: make check-versions || echo " make check-versions not available"
       
-      - name: 🧪 Run Python unit tests
+      - name:  Run Python unit tests
         env:
           PYTHONPATH: ./sdk/python/src
         run: |
           echo "=== Running Python Unit Tests ==="
-          pytest test/unit/ -v || echo "❌ Some tests failed, but continuing for debug"
+          pytest test/unit/ -v || echo " Some tests failed, but continuing for debug"
           echo "=== Python Unit Tests Completed ==="
       
-      - name: 🔌 Generate gRPC stubs
-        run: make generate-grpc-stubs || echo "⚠️ gRPC stub generation not available"
+      - name:  Generate gRPC stubs
+        run: make generate-grpc-stubs || echo " gRPC stub generation not available"
       
+      - name:  Inspect Build Output
+        run: |
+          file build/* || true
+          ls -R sdk/grpc/build_py || true
+          ls -R sdk/grpc/build_cpp || true
+
+# ... (rest of the workflow remains unchanged)
       - name: 📁 Inspect Build Output
         run: |
           file build/* || true
