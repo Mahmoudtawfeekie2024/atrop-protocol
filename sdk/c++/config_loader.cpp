@@ -56,7 +56,7 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
             file >> j;
 
             if (!j.is_object()) {
-                throw std::runtime_error("Config JSON must be an object with key-value pairs.");
+                throw std::runtime_error("Config JSON must be an object");
             }
 
             for (auto it = j.begin(); it != j.end(); ++it) {
@@ -78,8 +78,6 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
         } else if (ext == ".yaml" || ext == ".yml") {
             YAML::Node y = YAML::LoadFile(filepath);
 
-            // Flatten only top-level scalars into config map
-            // Nested YAML nodes are skipped and expected to be handled by consumers
             for (auto it = y.begin(); it != y.end(); ++it) {
                 const std::string key = it->first.as<std::string>();
                 YAML::Node val = it->second;
@@ -87,7 +85,6 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
                 if (val.IsScalar()) {
                     config[key] = val.as<std::string>();
                 }
-                // Nested structures ignored here on purpose
             }
         } else {
             throw std::runtime_error("Unsupported config file extension: " + ext);
