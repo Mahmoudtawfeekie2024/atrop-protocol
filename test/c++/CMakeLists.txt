@@ -9,6 +9,11 @@ include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/sdk/c++)
 include_directories(${CMAKE_SOURCE_DIR}/daemon/handlers)
 
+# Add FSM and states include directories for all test targets
+include_directories(${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm)
+include_directories(${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/states)
+include_directories(${CMAKE_SOURCE_DIR}/daemon/control_plane)
+
 # Test 1: test_sample
 add_executable(test_sample test_sample.cpp)
 target_link_libraries(test_sample
