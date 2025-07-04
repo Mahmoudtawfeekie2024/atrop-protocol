@@ -31,12 +31,12 @@ add_test(NAME test_config_loader COMMAND test_config_loader)
 # Test 3: handler_test
 add_executable(handler_test
     test_handlers.cpp
-    ../../../daemon/handlers/discovery_handler.cpp
-    ../../../daemon/handlers/decision_handler.cpp
-    ../../../daemon/handlers/observation_handler.cpp
-    ../../../daemon/handlers/correction_handler.cpp
-    ../../../daemon/handlers/security_handler.cpp
-    ../../../daemon/handlers/exit_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/discovery_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/decision_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/observation_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/correction_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/security_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/exit_handler.cpp
 )
 target_link_libraries(handler_test
   ${GTEST_LIBRARIES}
