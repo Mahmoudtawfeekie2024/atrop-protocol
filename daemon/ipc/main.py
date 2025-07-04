@@ -2,6 +2,7 @@ from logger import setup_logger
 from config_loader import load_config
 from discovery_handler import handle_discovery_packet
 from decision_handler import handle_decision_packet
+from observation_handler import handle_observation_packet
 
 def main():
     config = load_config("config.yaml")
@@ -17,6 +18,9 @@ def main():
 
     # Simulate receiving a Decision packet (stub)
     handle_decision_packet("DECISION_PACKET_PLACEHOLDER")
+
+    # Simulate receiving an Observation packet (stub)
+    handle_observation_packet("OBSERVATION_PACKET_PLACEHOLDER")
 
 if __name__ == "__main__":
     main()
