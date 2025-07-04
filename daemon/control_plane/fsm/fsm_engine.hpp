@@ -1,12 +1,11 @@
 #pragma once
 
-#include "base_state.hpp"
-#include <memory>
 #include <map>
+#include <memory>
 #include <string>
 #include <spdlog/spdlog.h>
+#include "base_state.hpp"
 
-// Forward declaration for state pointer type
 class FSMEngine {
 public:
     explicit FSMEngine(std::shared_ptr<spdlog::logger> logger);
