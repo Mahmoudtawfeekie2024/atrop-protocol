@@ -21,45 +21,6 @@
 #include "../fsm/states/correct_state.hpp"
 #include "../fsm/states/exit_state.hpp"
 
-// --- FSMEvent enum and string conversion (must match FSMEngine) ---
-enum class FSMEvent {
-    RegistrationComplete,
-    NeighborsMapped,
-    TopologyStable,
-    PolicyApproved,
-    ForwardingActive,
-    TelemetryThreshold,
-    ModelUpdated,
-    AnomalyViolation,
-    FallbackRecovery,
-    CorrectionApplied,
-    TrustRevoked,
-    NodeShutdown,
-    ManualOverride,
-    ManualReset,
-    Unknown
-};
-
-std::string event_to_string(FSMEvent event) {
-    switch (event) {
-        case FSMEvent::RegistrationComplete: return "RegistrationComplete";
-        case FSMEvent::NeighborsMapped: return "NeighborsMapped";
-        case FSMEvent::TopologyStable: return "TopologyStable";
-        case FSMEvent::PolicyApproved: return "PolicyApproved";
-        case FSMEvent::ForwardingActive: return "ForwardingActive";
-        case FSMEvent::TelemetryThreshold: return "TelemetryThreshold";
-        case FSMEvent::ModelUpdated: return "ModelUpdated";
-        case FSMEvent::AnomalyViolation: return "AnomalyViolation";
-        case FSMEvent::FallbackRecovery: return "FallbackRecovery";
-        case FSMEvent::CorrectionApplied: return "CorrectionApplied";
-        case FSMEvent::TrustRevoked: return "TrustRevoked";
-        case FSMEvent::NodeShutdown: return "NodeShutdown";
-        case FSMEvent::ManualOverride: return "ManualOverride";
-        case FSMEvent::ManualReset: return "ManualReset";
-        default: return "Unknown";
-    }
-}
-
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
 
