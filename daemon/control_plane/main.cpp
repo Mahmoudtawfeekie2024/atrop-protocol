@@ -120,6 +120,10 @@ int main() {
         fsm.handle_event(FSMEvent::ManualOverride);       // OBSERVE -> CORRECT (emergency)
         fsm.handle_event(FSMEvent::TrustRevoked);         // CORRECT -> EXIT
 
+        // Example: Print event as string using FSMEngine::event_to_string
+        FSMEvent example_event = FSMEvent::PolicyApproved;
+        std::cout << "Example event as string: " << FSMEngine::event_to_string(example_event) << std::endl;
+
     } catch (const std::exception& e) {
         std::cerr << "[CONFIG] Error loading config: " << e.what() << std::endl;
         if (auto log = atrop::Logger::get()) {
