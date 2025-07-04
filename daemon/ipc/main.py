@@ -1,11 +1,11 @@
 from logger import setup_logger
 from config_loader import load_config
-from discovery_handler import handle_discovery_packet
-from decision_handler import handle_decision_packet
-from observation_handler import handle_observation_packet
-from correction_handler import handle_correction_packet
-from security_handler import handle_security_packet
-from exit_handler import handle_exit_packet
+from handlers.discovery_handler import handle_discovery_packet
+from handlers.decision_handler import handle_decision_packet
+from handlers.observation_handler import handle_observation_packet
+from handlers.correction_handler import handle_correction_packet
+from handlers.security_handler import handle_security_packet
+from handlers.exit_handler import handle_exit_packet
 
 def main():
     config = load_config("config.yaml")
