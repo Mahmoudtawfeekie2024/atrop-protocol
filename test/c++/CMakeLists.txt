@@ -6,8 +6,8 @@ enable_testing()
 
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/sdk/c++)
-include_directories(${PROJECT_SOURCE_DIR}/daemon/handlers)
+include_directories(${CMAKE_SOURCE_DIR}/sdk/c++)
+include_directories(${CMAKE_SOURCE_DIR}/daemon/handlers)
 
 # Test 1: test_sample
 add_executable(test_sample test_sample.cpp)
@@ -31,12 +31,12 @@ add_test(NAME test_config_loader COMMAND test_config_loader)
 # Test 3: handler_test
 add_executable(handler_test
     test_handlers.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/discovery_handler.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/decision_handler.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/observation_handler.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/correction_handler.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/security_handler.cpp
-    ${PROJECT_SOURCE_DIR}/daemon/handlers/exit_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/discovery_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/decision_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/observation_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/correction_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/security_handler.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/handlers/exit_handler.cpp
 )
 target_link_libraries(handler_test
   ${GTEST_LIBRARIES}
