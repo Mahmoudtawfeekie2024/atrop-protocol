@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Print CMake and Compiler Versions
+        run: |
+          cmake --version
+          g++ --version
+
       - name: Install system dependencies
         run: |
           sudo apt update && sudo apt install -y \
@@ -39,50 +44,62 @@ jobs:
           echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
-      - name: Build daemon and SDK
+      - name: Build daemon and SDK (fail on warnings)
         env:
           VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
           CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
           mkdir -p build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          # Treat warnings as errors in CMake
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH -DCMAKE_WARN_DEPRECATED=ON
           cmake --build . -- -j$(nproc)
+        continue-on-error: false
 
-      - name: 🐍 Install Python dependencies
+      - name:  Install Python dependencies
         run: |
           pip install -r dev-requirements.txt
           pip install pyyaml python-json-logger
 
-      - name: 🐍 Install SDK in editable mode
+      - name:  Install SDK in editable mode
         run: pip install -e ./sdk/python
 
-      - name: 🔍 Print Python sys.path and import check
+      - name:  Print Python sys.path and import check
         run: |
           export PYTHONPATH=$(pwd)/sdk/python
           echo "Python Path:"
           python -c "import sys; print('\n'.join(sys.path))"
-          python -c "import atrop_sdk; print('✅ SDK Import Successful:', atrop_sdk)"
+          python -c "import atrop_sdk; print(' SDK Import Successful:', atrop_sdk)"
 
-      - name: 🔍 Check tool versions (optional)
+      - name:  Check tool versions (optional)
         run: make check-versions
 
-      - name: 🧪 Run Python unit tests
+      - name:  Run Python unit tests
         env:
           PYTHONPATH: ./sdk/python/src
         run: |
           echo "=== Running Python Unit Tests ==="
-          pytest test/unit/ -v || echo "❌ Some tests failed, but continuing for debug"
+          pytest test/unit/ -v || echo " Some tests failed, but continuing for debug"
           echo "=== Python Unit Tests Completed ==="
 
-      - name: 🔌 Generate gRPC stubs
+      - name:  Generate gRPC stubs
         run: make generate-grpc-stubs
 
-      - name: 📁 Inspect Build Output
+      - name:  Inspect Build Output
         run: |
           file build/* || true
           ls -R sdk/grpc/build_py || true
           ls -R sdk/grpc/build_cpp || true
+
+      - name: Upload build logs and artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-logs
+          path: |
+            build/
+            **/CMakeFiles/CMakeOutput.log
+            **/CMakeFiles/CMakeError.log
 
   python-lint:
     name: 🧼 Python Lint
