@@ -1,6 +1,7 @@
 from logger import setup_logger
 from config_loader import load_config
-from discovery_handler import handle_discovery_packet  # Newly added import
+from discovery_handler import handle_discovery_packet
+from decision_handler import handle_decision_packet
 
 def main():
     config = load_config("config.yaml")
@@ -13,6 +14,9 @@ def main():
 
     # Simulate receiving a Discovery packet (stub)
     handle_discovery_packet("DISCOVERY_PACKET_PLACEHOLDER")
+
+    # Simulate receiving a Decision packet (stub)
+    handle_decision_packet("DECISION_PACKET_PLACEHOLDER")
 
 if __name__ == "__main__":
     main()
