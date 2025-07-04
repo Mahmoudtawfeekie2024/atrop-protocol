@@ -11,7 +11,8 @@
 
 // Stub logger for tests
 std::shared_ptr<spdlog::logger> get_test_logger() {
-    static auto logger = atrop::Logger::init("FSMTest", "debug", "");
+    // Logger::init returns void, so just call it for side effects
+    atrop::Logger::init("FSMTest", "debug", "");
     return atrop::Logger::get();
 }
 
@@ -30,7 +31,7 @@ TEST(FSMTest, StateEntryExit) {
     fsm.register_state("EXIT", exit_state);
 
     // Start FSM at INIT
-    ASSERT_TRUE(fsm.start("INIT"));
+    fsm.start("INIT");
     EXPECT_EQ(fsm.current_state_name(), "INIT");
 
     // Transition to DISCOVERY
@@ -53,7 +54,7 @@ TEST(FSMTest, InvalidTransition) {
     auto init = std::make_shared<InitState>(logger);
     fsm.register_state("INIT", init);
 
-    ASSERT_TRUE(fsm.start("INIT"));
+    fsm.start("INIT");
     EXPECT_FALSE(fsm.transition_to("NON_EXISTENT"));
     EXPECT_EQ(fsm.current_state_name(), "INIT");
 }
@@ -68,7 +69,7 @@ TEST(FSMTest, RepeatedEntryExit) {
     fsm.register_state("INIT", init);
     fsm.register_state("EXIT", exit_state);
 
-    ASSERT_TRUE(fsm.start("INIT"));
+    fsm.start("INIT");
     ASSERT_TRUE(fsm.transition_to("EXIT"));
     // Transition back to INIT
     ASSERT_TRUE(fsm.transition_to("INIT"));
