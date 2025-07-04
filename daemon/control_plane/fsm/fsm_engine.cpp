@@ -1,42 +1,60 @@
-#include "fsm_engine.hpp"
+#pragma once
 
-FSMEngine::FSMEngine(std::shared_ptr<spdlog::logger> logger)
-    : logger_(std::move(logger)), current_state_(nullptr) {}
+#include <map>
+#include <memory>
+#include <string>
+#include <spdlog/logger.h>
+#include "base_state.hpp"
 
-void FSMEngine::register_state(const std::string& state_name, std::shared_ptr<BaseState> state) {
-    states_[state_name] = std::move(state);
-    if (logger_) {
-        logger_->info("FSM: Registered state '{}'", state_name);
-    }
-}
+// Event type for FSM transitions
+enum class FSMEvent {
+    RegistrationComplete,
+    NeighborsMapped,
+    TopologyStable,
+    PolicyApproved,
+    ForwardingActive,
+    TelemetryThreshold,
+    ModelUpdated,
+    AnomalyViolation,
+    FallbackRecovery,
+    CorrectionApplied,
+    TrustRevoked,
+    NodeShutdown,
+    ManualOverride,
+    ManualReset,
+    Unknown
+};
 
-bool FSMEngine::transition_to(const std::string& state_name) {
-    auto it = states_.find(state_name);
-    if (it == states_.end()) {
-        if (logger_) {
-            logger_->error("FSM: State '{}' not found!", state_name);
-        }
-        return false;
-    }
-    if (current_state_) {
-        current_state_->on_exit();
-    }
-    current_state_ = it->second;
-    if (logger_) {
-        logger_->info("FSM: Transitioned to state '{}'", state_name);
-    }
-    current_state_->on_enter();
-    return true;
-}
+class FSMEngine {
+public:
+    explicit FSMEngine(std::shared_ptr<spdlog::logger> logger);
 
-std::string FSMEngine::current_state_name() const {
-    return current_state_ ? current_state_->name() : "NONE";
-}
+    // Register a state with the engine
+    void register_state(const std::string& state_name, std::shared_ptr<BaseState> state);
 
-void FSMEngine::start(const std::string& initial_state) {
-    if (!transition_to(initial_state)) {
-        if (logger_) {
-            logger_->error("FSM: Failed to start at state '{}'", initial_state);
-        }
-    }
-}
+    // Transition to a new state by name (direct, for legacy/test)
+    bool transition_to(const std::string& state_name);
+
+    // Trigger a transition by event (preferred)
+    bool handle_event(FSMEvent event);
+
+    // Get the current state name
+    std::string current_state_name() const;
+
+    // Start the FSM at a given state
+    void start(const std::string& initial_state);
+
+    // Add a valid transition (from_state, event) -> to_state
+    void add_transition(const std::string& from_state, FSMEvent event, const std::string& to_state);
+
+private:
+    std::map<std::string, std::shared_ptr<BaseState>> states_;
+    std::shared_ptr<BaseState> current_state_;
+    std::shared_ptr<spdlog::logger> logger_;
+
+    // Transition table: (from_state, event) -> to_state
+    std::map<std::pair<std::string, FSMEvent>, std::string> transition_table_;
+
+    // Helper to stringify FSMEvent
+    std::string event_to_string(FSMEvent event) const;
+};
