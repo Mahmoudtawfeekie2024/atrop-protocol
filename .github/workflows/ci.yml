@@ -103,8 +103,9 @@ jobs:
 
   python-lint:
     name: 🧼 Python Lint
-    runs-on: ubuntu-latest
-    needs: build
+    runs-on: ubuntu-latest  
+    needs: [build, docker-lint]
+    if: needs.build.result == 'success' || needs.docker-lint.result == 'success'
     steps:
       - uses: actions/checkout@v3
 
@@ -129,7 +130,8 @@ jobs:
   cpp-lint:
     name: 🧼 C++ Lint (clang-tidy)
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, docker-lint]
+    if: needs.build.result == 'success' || needs.docker-lint.result == 'success'
     steps:
       - uses: actions/checkout@v3
 
