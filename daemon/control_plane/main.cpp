@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <memory>
 #include <config_loader.hpp>
 #include "logger.hpp"
 #include "../handlers/discovery_handler.hpp"
@@ -8,6 +9,18 @@
 #include "../handlers/correction_handler.hpp"
 #include "../handlers/security_handler.hpp"
 #include "../handlers/exit_handler.hpp"
+
+// FSM includes
+#include "../fsm/fsm_engine.hpp"
+#include "../fsm/states/init_state.hpp"
+#include "../fsm/states/discovery_state.hpp"
+#include "../fsm/states/learn_state.hpp"
+#include "../fsm/states/decide_state.hpp"
+#include "../fsm/states/enforce_state.hpp"
+#include "../fsm/states/observe_state.hpp"
+#include "../fsm/states/feedback_state.hpp"
+#include "../fsm/states/correct_state.hpp"
+#include "../fsm/states/exit_state.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -52,6 +65,34 @@ int main() {
                 log->debug("  {}: {}", key, arg);
             }, val);
         }
+
+        // --- FSM Engine and State Registration ---
+        auto fsm_logger = atrop::Logger::get();
+        FSMEngine fsm(fsm_logger);
+
+        // Instantiate all states with logger
+        fsm.register_state("INIT", std::make_shared<InitState>(fsm_logger));
+        fsm.register_state("DISCOVERY", std::make_shared<DiscoveryState>(fsm_logger));
+        fsm.register_state("LEARN", std::make_shared<LearnState>(fsm_logger));
+        fsm.register_state("DECIDE", std::make_shared<DecideState>(fsm_logger));
+        fsm.register_state("ENFORCE", std::make_shared<EnforceState>(fsm_logger));
+        fsm.register_state("OBSERVE", std::make_shared<ObserveState>(fsm_logger));
+        fsm.register_state("FEEDBACK", std::make_shared<FeedbackState>(fsm_logger));
+        fsm.register_state("CORRECT", std::make_shared<CorrectState>(fsm_logger));
+        fsm.register_state("EXIT", std::make_shared<ExitState>(fsm_logger));
+
+        // Start FSM at INIT state
+        fsm.start("INIT");
+
+        // Example: Demonstrate a few transitions (for testing)
+        fsm.transition_to("DISCOVERY");
+        fsm.transition_to("LEARN");
+        fsm.transition_to("DECIDE");
+        fsm.transition_to("ENFORCE");
+        fsm.transition_to("OBSERVE");
+        fsm.transition_to("FEEDBACK");
+        fsm.transition_to("CORRECT");
+        fsm.transition_to("EXIT");
 
     } catch (const std::exception& e) {
         std::cerr << "[CONFIG] Error loading config: " << e.what() << std::endl;
