@@ -33,3 +33,6 @@ def main():
 
     # Simulate receiving an Exit packet (stub)
     handle_exit_packet("EXIT_PACKET_PLACEHOLDER")
+
+if __name__ == "__main__":
+    main()
