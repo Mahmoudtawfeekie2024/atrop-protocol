@@ -17,13 +17,19 @@ add_subdirectory(test/unit/logger)
 add_executable(control_plane
     daemon/control_plane/main.cpp
     daemon/common/logger.cpp
+    daemon/handlers/discovery_handler.cpp
+    daemon/handlers/decision_handler.cpp
+    daemon/handlers/observation_handler.cpp
+    daemon/handlers/correction_handler.cpp
+    daemon/handlers/security_handler.cpp
+    daemon/handlers/exit_handler.cpp
 )
 
 target_include_directories(control_plane
     PRIVATE
         ${CMAKE_SOURCE_DIR}/sdk/c++        # for config_loader.hpp
         ${CMAKE_SOURCE_DIR}/daemon/common  # for logger.hpp
-        ${CMAKE_SOURCE_DIR}/daemon/control_plane  # for control_plan/*.hpp
+        ${CMAKE_SOURCE_DIR}/daemon/handlers
 )
 
 target_link_libraries(control_plane
@@ -31,5 +37,5 @@ target_link_libraries(control_plane
         config_loader
         spdlog::spdlog
         fmt::fmt
-        yaml-cpp
+        yaml-cpp::yaml-cpp
 )
