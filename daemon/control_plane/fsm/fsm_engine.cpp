@@ -1,7 +1,7 @@
 #include "fsm_engine.hpp"
 
 FSMEngine::FSMEngine(std::shared_ptr<spdlog::logger> logger)
-    : logger_(std::move(logger)), current_state_(nullptr) {}
+    : logger_(std::move(logger)), current_state_("") {}
 
 void FSMEngine::register_state(const std::string& state_name, std::shared_ptr<BaseState> state) {
     states_[state_name] = std::move(state);
@@ -11,7 +11,7 @@ void FSMEngine::register_state(const std::string& state_name, std::shared_ptr<Ba
 }
 
 void FSMEngine::add_transition(const std::string& from_state, FSMEvent event, const std::string& to_state) {
-    transition_table_[{from_state, event}] = to_state;
+    transitions_[{from_state, event}] = to_state;
     if (logger_) {
         logger_->info("FSM: Added transition {} + {} -> {}", from_state, event_to_string(event), to_state);
     }
@@ -25,36 +25,15 @@ bool FSMEngine::transition_to(const std::string& state_name) {
         }
         return false;
     }
-    if (current_state_) {
-        current_state_->on_exit();
+    if (!current_state_.empty() && states_.count(current_state_)) {
+        states_[current_state_]->on_exit();
     }
-    current_state_ = it->second;
+    current_state_ = state_name;
     if (logger_) {
         logger_->info("FSM: Transitioned to state '{}'", state_name);
     }
-    current_state_->on_enter();
+    states_[state_name]->on_enter();
     return true;
-}
-
-bool FSMEngine::handle_event(FSMEvent event) {
-    std::string from = current_state_ ? current_state_->name() : "NONE";
-    auto key = std::make_pair(from, event);
-    auto it = transition_table_.find(key);
-    if (it == transition_table_.end()) {
-        if (logger_) {
-            logger_->error("FSM: Invalid transition: State='{}', Event='{}'", from, event_to_string(event));
-        }
-        return false;
-    }
-    std::string to = it->second;
-    if (logger_) {
-        logger_->info("FSM: Handling event '{}' in state '{}', transitioning to '{}'", event_to_string(event), from, to);
-    }
-    return transition_to(to);
-}
-
-std::string FSMEngine::current_state_name() const {
-    return current_state_ ? current_state_->name() : "NONE";
 }
 
 void FSMEngine::start(const std::string& initial_state) {
@@ -65,7 +44,28 @@ void FSMEngine::start(const std::string& initial_state) {
     }
 }
 
-std::string FSMEngine::event_to_string(FSMEvent event) const {
+void FSMEngine::handle_event(FSMEvent event) {
+    std::string from = current_state_;
+    auto key = std::make_pair(from, event);
+    auto it = transitions_.find(key);
+    if (it == transitions_.end()) {
+        if (logger_) {
+            logger_->error("FSM: Invalid transition: State='{}', Event='{}'", from, event_to_string(event));
+        }
+        return;
+    }
+    std::string to = it->second;
+    if (logger_) {
+        logger_->info("FSM: Handling event '{}' in state '{}', transitioning to '{}'", event_to_string(event), from, to);
+    }
+    transition_to(to);
+}
+
+std::string FSMEngine::current_state_name() const {
+    return current_state_;
+}
+
+std::string FSMEngine::event_to_string(FSMEvent event) {
     switch (event) {
         case FSMEvent::RegistrationComplete: return "RegistrationComplete";
         case FSMEvent::NeighborsMapped: return "NeighborsMapped";
