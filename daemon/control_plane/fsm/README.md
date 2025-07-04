@@ -127,11 +127,11 @@ fsm.transition_to("DISCOVERY");
 
 ## References
 
-- [FSM Engine Source](../../daemon/control_plane/fsm/fsm_engine.hpp)
-- [State Implementations](../../daemon/control_plane/fsm/states/)
-- [Logger](../../daemon/common/logger.hpp)
-- [Config Loader](../../sdk/c++/config_loader.hpp)
+- [FSM Engine Source](../daemon/control_plane/fsm/states)
+- [State Implementations](../daemon/control_plane/fsm/states/)
+- [Logger](../daemon/common/logger.hpp)
+- [Config Loader](../sdk/c++/config_loader.hpp)
 
 ---
 
-*For further details, see the main project [README.md](../../README.md) and protocol documentation.*
+*For further details, see the main project [README.md](../README.md) and protocol documentation.*
