@@ -9,8 +9,6 @@
 #include "../handlers/correction_handler.hpp"
 #include "../handlers/security_handler.hpp"
 #include "../handlers/exit_handler.hpp"
-
-// FSM includes
 #include "../fsm/fsm_engine.hpp"
 #include "../fsm/states/init_state.hpp"
 #include "../fsm/states/discovery_state.hpp"
