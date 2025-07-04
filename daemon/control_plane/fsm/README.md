@@ -123,15 +123,4 @@ fsm.transition_to("DISCOVERY");
   - Python ML agent signals anomaly → C++ FSM transitions to CORRECT state.
   - C++ FSM emits telemetry → Python module consumes for model retraining.
 
----
-
-## References
-
-- [FSM Engine Source](../daemon/control_plane/fsm/states)
-- [State Implementations](../daemon/control_plane/fsm/states/)
-- [Logger](../daemon/common/logger.hpp)
-- [Config Loader](../sdk/c++/config_loader.hpp)
-
----
-
 *For further details, see the main project [README.md](../README.md) and protocol documentation.*
