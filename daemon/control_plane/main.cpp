@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <vector>
 #include <config_loader.hpp>
 #include "logger.hpp"
 #include "../handlers/discovery_handler.hpp"
@@ -19,6 +20,45 @@
 #include "../fsm/states/feedback_state.hpp"
 #include "../fsm/states/correct_state.hpp"
 #include "../fsm/states/exit_state.hpp"
+
+// --- FSMEvent enum and string conversion (must match FSMEngine) ---
+enum class FSMEvent {
+    RegistrationComplete,
+    NeighborsMapped,
+    TopologyStable,
+    PolicyApproved,
+    ForwardingActive,
+    TelemetryThreshold,
+    ModelUpdated,
+    AnomalyViolation,
+    FallbackRecovery,
+    CorrectionApplied,
+    TrustRevoked,
+    NodeShutdown,
+    ManualOverride,
+    ManualReset,
+    Unknown
+};
+
+std::string event_to_string(FSMEvent event) {
+    switch (event) {
+        case FSMEvent::RegistrationComplete: return "RegistrationComplete";
+        case FSMEvent::NeighborsMapped: return "NeighborsMapped";
+        case FSMEvent::TopologyStable: return "TopologyStable";
+        case FSMEvent::PolicyApproved: return "PolicyApproved";
+        case FSMEvent::ForwardingActive: return "ForwardingActive";
+        case FSMEvent::TelemetryThreshold: return "TelemetryThreshold";
+        case FSMEvent::ModelUpdated: return "ModelUpdated";
+        case FSMEvent::AnomalyViolation: return "AnomalyViolation";
+        case FSMEvent::FallbackRecovery: return "FallbackRecovery";
+        case FSMEvent::CorrectionApplied: return "CorrectionApplied";
+        case FSMEvent::TrustRevoked: return "TrustRevoked";
+        case FSMEvent::NodeShutdown: return "NodeShutdown";
+        case FSMEvent::ManualOverride: return "ManualOverride";
+        case FSMEvent::ManualReset: return "ManualReset";
+        default: return "Unknown";
+    }
+}
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -79,18 +119,45 @@ int main() {
         fsm.register_state("CORRECT", std::make_shared<CorrectState>(fsm_logger));
         fsm.register_state("EXIT", std::make_shared<ExitState>(fsm_logger));
 
-        // Start FSM at INIT state
+        // --- FSM Transition Table Setup ---
+        fsm.add_transition("INIT", FSMEvent::RegistrationComplete, "DISCOVERY");
+        fsm.add_transition("DISCOVERY", FSMEvent::NeighborsMapped, "LEARN");
+        fsm.add_transition("LEARN", FSMEvent::TopologyStable, "DECIDE");
+        fsm.add_transition("DECIDE", FSMEvent::PolicyApproved, "ENFORCE");
+        fsm.add_transition("ENFORCE", FSMEvent::ForwardingActive, "OBSERVE");
+        fsm.add_transition("OBSERVE", FSMEvent::TelemetryThreshold, "FEEDBACK");
+        fsm.add_transition("FEEDBACK", FSMEvent::ModelUpdated, "DECIDE");
+        fsm.add_transition("DECIDE", FSMEvent::AnomalyViolation, "CORRECT");
+        fsm.add_transition("ENFORCE", FSMEvent::AnomalyViolation, "CORRECT");
+        fsm.add_transition("CORRECT", FSMEvent::FallbackRecovery, "OBSERVE");
+        fsm.add_transition("CORRECT", FSMEvent::CorrectionApplied, "LEARN");
+        fsm.add_transition("CORRECT", FSMEvent::TrustRevoked, "EXIT");
+        fsm.add_transition("FEEDBACK", FSMEvent::NodeShutdown, "EXIT");
+
+        // Emergency/manual transitions (ANY state)
+        std::vector<std::string> all_states = {
+            "INIT", "DISCOVERY", "LEARN", "DECIDE", "ENFORCE", "OBSERVE", "FEEDBACK", "CORRECT", "EXIT"
+        };
+        for (const auto& state : all_states) {
+            fsm.add_transition(state, FSMEvent::ManualOverride, "CORRECT");
+            fsm.add_transition(state, FSMEvent::ManualReset, "INIT");
+        }
+
+        // --- Start FSM at INIT state ---
         fsm.start("INIT");
 
-        // Example: Demonstrate a few transitions (for testing)
-        fsm.transition_to("DISCOVERY");
-        fsm.transition_to("LEARN");
-        fsm.transition_to("DECIDE");
-        fsm.transition_to("ENFORCE");
-        fsm.transition_to("OBSERVE");
-        fsm.transition_to("FEEDBACK");
-        fsm.transition_to("CORRECT");
-        fsm.transition_to("EXIT");
+        // --- Demonstrate event-driven transitions ---
+        fsm.handle_event(FSMEvent::RegistrationComplete); // INIT -> DISCOVERY
+        fsm.handle_event(FSMEvent::NeighborsMapped);      // DISCOVERY -> LEARN
+        fsm.handle_event(FSMEvent::TopologyStable);       // LEARN -> DECIDE
+        fsm.handle_event(FSMEvent::PolicyApproved);       // DECIDE -> ENFORCE
+        fsm.handle_event(FSMEvent::ForwardingActive);     // ENFORCE -> OBSERVE
+        fsm.handle_event(FSMEvent::TelemetryThreshold);   // OBSERVE -> FEEDBACK
+        fsm.handle_event(FSMEvent::ModelUpdated);         // FEEDBACK -> DECIDE
+        fsm.handle_event(FSMEvent::AnomalyViolation);     // DECIDE -> CORRECT
+        fsm.handle_event(FSMEvent::FallbackRecovery);     // CORRECT -> OBSERVE
+        fsm.handle_event(FSMEvent::ManualOverride);       // OBSERVE -> CORRECT (emergency)
+        fsm.handle_event(FSMEvent::TrustRevoked);         // CORRECT -> EXIT
 
     } catch (const std::exception& e) {
         std::cerr << "[CONFIG] Error loading config: " << e.what() << std::endl;
