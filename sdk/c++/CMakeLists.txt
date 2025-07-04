@@ -1,5 +1,3 @@
-# sdk/c++/CMakeLists.txt
-
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 
@@ -11,7 +9,7 @@ target_include_directories(config_loader
 )
 
 target_link_libraries(config_loader
-    PUBLIC                         # ✅ PUBLIC ensures it's visible to dependent targets
-        yaml-cpp::yaml-cpp         # ✅ Fix deprecated warning
+    PUBLIC
+        yaml-cpp::yaml-cpp
         nlohmann_json::nlohmann_json
 )
