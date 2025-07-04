@@ -1,5 +1,3 @@
-# test/c++/CMakeLists.txt
-
 cmake_minimum_required(VERSION 3.10)
 project(ATROP_CppTests)
 
@@ -8,6 +6,8 @@ enable_testing()
 
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/sdk/c++)
+include_directories(${CMAKE_SOURCE_DIR}/daemon/handlers)
 
 # Test 1: test_sample
 add_executable(test_sample test_sample.cpp)
@@ -18,14 +18,29 @@ target_link_libraries(test_sample
 )
 add_test(NAME test_sample COMMAND test_sample)
 
-# ✅ Test 2: test_config_loader
+# Test 2: test_config_loader
 add_executable(test_config_loader test_config_loader.cpp)
-
 target_link_libraries(test_config_loader
-  config_loader                   # ✅ Link the library defined in sdk/c++
+  config_loader                   # Link the library defined in sdk/c++
   ${GTEST_LIBRARIES}
   GTest::gtest_main
   pthread
 )
-
 add_test(NAME test_config_loader COMMAND test_config_loader)
+
+# Test 3: handler_test
+add_executable(handler_test
+    test_handlers.cpp
+    ../../../daemon/handlers/discovery_handler.cpp
+    ../../../daemon/handlers/decision_handler.cpp
+    ../../../daemon/handlers/observation_handler.cpp
+    ../../../daemon/handlers/correction_handler.cpp
+    ../../../daemon/handlers/security_handler.cpp
+    ../../../daemon/handlers/exit_handler.cpp
+)
+target_link_libraries(handler_test
+  ${GTEST_LIBRARIES}
+  GTest::gtest_main
+  pthread
+)
+add_test(NAME handler_test COMMAND handler_test)
