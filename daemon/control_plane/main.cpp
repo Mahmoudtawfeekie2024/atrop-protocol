@@ -8,6 +8,7 @@
 #include "decision_handler.hpp"
 #include "observation_handler.hpp"
 #include "correction_handler.hpp"
+#include "security_handler.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -72,6 +73,9 @@ int main() {
 
     // Simulate receiving a Correction packet (stub)
     handleCorrectionPacket("CORRECTION_PACKET_PLACEHOLDER");
+
+    // Simulate receiving a Security packet (stub)
+    handleSecurityPacket("SECURITY_PACKET_PLACEHOLDER");
 
     // TODO: Start gRPC server, FSM, etc.
     return 0;
