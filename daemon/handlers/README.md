@@ -1,64 +1,75 @@
-# ATROP Control Plane Handlers
+# ATROP IPC Module
 
-The **ATROP Protocol Handlers** module contains the initial stub implementations for processing ATROP’s core packet types in the control plane.
-
-Each handler is a placeholder designed to log reception and identify message types such as `Discovery`, `Decision`, and `Observation`. They serve as entry points for future parsing, validation, and FSM routing.
+The **ATROP IPC Daemon** manages inter-process communication between ATROP components (Control Plane, Data Plane, Model Engine). It ensures reliable message exchange and daemon lifecycle coordination.
 
 ---
 
-## Implemented Handlers
+## Entrypoint
 
-| Packet Type | Handler File               | Purpose                                       |
-|-------------|----------------------------|-----------------------------------------------|
-| Discovery   | `discovery_handler.cpp`    | Handles node introduction and topology sync   |
-| Decision    | `decision_handler.cpp`     | Processes AI routing intent and policies      |
-| Observation | `observation_handler.cpp`  | Accepts telemetry and learning feedback       |
+**`main.cpp`**
 
-All stubs follow a consistent pattern:
-- Log packet receipt
-- Identify message type
-- Add `TODO` markers for parsing headers (NIV, IDR, PIV, FIF)
-- Add `FIXME` for FSM dispatch hooks
+- Starts the IPC handling service
+- Placeholder for:
+  - Argument parsing
+  - IPC channel initialization (e.g., UNIX sockets, shared memory)
+- Returns `0` on successful initialization
 
----
+To compile:
 
-## Stub Design Philosophy
-
-Each handler currently includes:
-
-- Function signature:
-  ```cpp
-  void handle<Type>Packet(const std::vector<uint8_t>& packet);
-  ```
-
-- Central logging call:
-  ```cpp
-  LOG_INFO("Received <TYPE> packet");
-  ```
-
-- Placeholder comments:
-  ```cpp
-  // TODO: Extract NIV
-  // FIXME: Integrate with FSM
-  ```
-
-These stubs are safe to compile, test, and evolve during Phase 1 and Phase 2 of the ATROP protocol implementation lifecycle.
+```bash
+g++ main.cpp -o atrop_ipc
+./atrop_ipc
+```
 
 ---
 
-## Logging Integration
+## Responsibilities
 
-The handlers use the unified logging abstraction from `daemon/common/logger.[hpp|cpp]`. All logs are formatted consistently and routed to stdout or files, based on ATROP config.
-
----
-
-## Future Enhancements
-
-- Full binary/TLV parsing of ATROP protocol headers
-- FSM state dispatch (e.g., trigger `DISCOVERY → LEARN`)
-- Packet validation and trust domain enforcement
-- Protocol error handling and resilience fallbacks
+- Broker messages across daemons (FIF, PIV, decisions)
+- Handle agent registration and heartbeat
+- Secure the IPC layer (permissions, identity check)
+- Coordinate hot reload of models or config
 
 ---
 
-© 2025 Mahmoud Tawfeek – Conceptual only. For vendor integration and research use.
+## Future Scope
+
+- Support for gRPC or Netlink as IPC backend
+- Add sandboxing and privilege controls
+- Integrate with systemd service supervision
+
+---
+
+## 🔧 Configuration Loader
+
+The IPC Daemon loads its configuration from a `config.json` or `config.yaml` file at startup.
+
+### ✅ Supported Locations
+
+1. Path specified by `ATROP_CONFIG_PATH`
+2. Defaults: `./config.json` or `./config.yaml`
+3. Fallbacks embedded in code
+
+### 🔑 Required Fields
+
+| Key              | Description                        |
+|------------------|------------------------------------|
+| `ipc.socket_path`| Path to the IPC UNIX domain socket |
+| `ipc.timeout`    | Timeout for message retries (ms)   |
+
+Missing required fields result in fallback defaults or startup failure (if critical).
+
+### 🧪 Sample Config
+
+```json
+{
+  "ipc.socket_path": "/tmp/atrop.sock",
+  "ipc.timeout": 2000
+}
+```
+
+See `test/unit/sdk/config/` for more examples.
+
+---
+© 2025 Mahmoud Tawfeek – For conceptual demonstration of ATROP architecture only.
+---
