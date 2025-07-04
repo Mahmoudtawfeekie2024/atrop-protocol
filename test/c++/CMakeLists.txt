@@ -44,3 +44,12 @@ target_link_libraries(handler_test
   pthread
 )
 add_test(NAME handler_test COMMAND handler_test)
+
+# Test 4: test_fsm
+add_executable(test_fsm test_fsm.cpp)
+target_link_libraries(test_fsm
+  ${GTEST_LIBRARIES}
+  GTest::gtest_main
+  pthread
+)
+add_test(NAME test_fsm COMMAND test_fsm)
