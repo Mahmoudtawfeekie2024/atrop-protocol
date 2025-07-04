@@ -6,6 +6,7 @@
 #include "logger.hpp"
 #include "discovery_handler.hpp"
 #include "decision_handler.hpp"
+#include "observation_handler.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -64,6 +65,9 @@ int main() {
 
     // Simulate receiving a Decision packet (stub)
     handleDecisionPacket("DECISION_PACKET_PLACEHOLDER");
+
+    // Simulate receiving an Observation packet (stub)
+    handleObservationPacket("OBSERVATION_PACKET_PLACEHOLDER");
 
     // TODO: Start gRPC server, FSM, etc.
     return 0;
