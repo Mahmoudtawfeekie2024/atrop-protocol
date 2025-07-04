@@ -1,3 +1,4 @@
+#include "fsm_engine.hpp"
 #include <gtest/gtest.h>
 #include <memory>
 #include <string>
