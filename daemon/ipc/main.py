@@ -5,6 +5,7 @@ from decision_handler import handle_decision_packet
 from observation_handler import handle_observation_packet
 from correction_handler import handle_correction_packet
 from security_handler import handle_security_packet
+from exit_handler import handle_exit_packet
 
 def main():
     config = load_config("config.yaml")
@@ -30,5 +31,5 @@ def main():
     # Simulate receiving a Security packet (stub)
     handle_security_packet("SECURITY_PACKET_PLACEHOLDER")
 
-if __name__ == "__main__":
-    main()
+    # Simulate receiving an Exit packet (stub)
+    handle_exit_packet("EXIT_PACKET_PLACEHOLDER")
