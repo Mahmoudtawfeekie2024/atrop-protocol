@@ -2,12 +2,12 @@
 #include <string>
 #include <config_loader.hpp>
 #include "logger.hpp"
-#include "discovery_handler.hpp"
-#include "decision_handler.hpp"
-#include "observation_handler.hpp"
-#include "correction_handler.hpp"
-#include "security_handler.hpp"
-#include "exit_handler.hpp"
+#include "../handlers/discovery_handler.hpp"
+#include "../handlers/decision_handler.hpp"
+#include "../handlers/observation_handler.hpp"
+#include "../handlers/correction_handler.hpp"
+#include "../handlers/security_handler.hpp"
+#include "../handlers/exit_handler.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
