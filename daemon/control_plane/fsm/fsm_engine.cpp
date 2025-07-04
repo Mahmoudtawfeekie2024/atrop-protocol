@@ -1,60 +1,86 @@
-#pragma once
+#include "fsm_engine.hpp"
 
-#include <map>
-#include <memory>
-#include <string>
-#include <spdlog/logger.h>
-#include "base_state.hpp"
+FSMEngine::FSMEngine(std::shared_ptr<spdlog::logger> logger)
+    : logger_(std::move(logger)), current_state_(nullptr) {}
 
-// Event type for FSM transitions
-enum class FSMEvent {
-    RegistrationComplete,
-    NeighborsMapped,
-    TopologyStable,
-    PolicyApproved,
-    ForwardingActive,
-    TelemetryThreshold,
-    ModelUpdated,
-    AnomalyViolation,
-    FallbackRecovery,
-    CorrectionApplied,
-    TrustRevoked,
-    NodeShutdown,
-    ManualOverride,
-    ManualReset,
-    Unknown
-};
+void FSMEngine::register_state(const std::string& state_name, std::shared_ptr<BaseState> state) {
+    states_[state_name] = std::move(state);
+    if (logger_) {
+        logger_->info("FSM: Registered state '{}'", state_name);
+    }
+}
 
-class FSMEngine {
-public:
-    explicit FSMEngine(std::shared_ptr<spdlog::logger> logger);
+void FSMEngine::add_transition(const std::string& from_state, FSMEvent event, const std::string& to_state) {
+    transition_table_[{from_state, event}] = to_state;
+    if (logger_) {
+        logger_->info("FSM: Added transition {} + {} -> {}", from_state, event_to_string(event), to_state);
+    }
+}
 
-    // Register a state with the engine
-    void register_state(const std::string& state_name, std::shared_ptr<BaseState> state);
+bool FSMEngine::transition_to(const std::string& state_name) {
+    auto it = states_.find(state_name);
+    if (it == states_.end()) {
+        if (logger_) {
+            logger_->error("FSM: State '{}' not found!", state_name);
+        }
+        return false;
+    }
+    if (current_state_) {
+        current_state_->on_exit();
+    }
+    current_state_ = it->second;
+    if (logger_) {
+        logger_->info("FSM: Transitioned to state '{}'", state_name);
+    }
+    current_state_->on_enter();
+    return true;
+}
 
-    // Transition to a new state by name (direct, for legacy/test)
-    bool transition_to(const std::string& state_name);
+bool FSMEngine::handle_event(FSMEvent event) {
+    std::string from = current_state_ ? current_state_->name() : "NONE";
+    auto key = std::make_pair(from, event);
+    auto it = transition_table_.find(key);
+    if (it == transition_table_.end()) {
+        if (logger_) {
+            logger_->error("FSM: Invalid transition: State='{}', Event='{}'", from, event_to_string(event));
+        }
+        return false;
+    }
+    std::string to = it->second;
+    if (logger_) {
+        logger_->info("FSM: Handling event '{}' in state '{}', transitioning to '{}'", event_to_string(event), from, to);
+    }
+    return transition_to(to);
+}
 
-    // Trigger a transition by event (preferred)
-    bool handle_event(FSMEvent event);
+std::string FSMEngine::current_state_name() const {
+    return current_state_ ? current_state_->name() : "NONE";
+}
 
-    // Get the current state name
-    std::string current_state_name() const;
+void FSMEngine::start(const std::string& initial_state) {
+    if (!transition_to(initial_state)) {
+        if (logger_) {
+            logger_->error("FSM: Failed to start at state '{}'", initial_state);
+        }
+    }
+}
 
-    // Start the FSM at a given state
-    void start(const std::string& initial_state);
-
-    // Add a valid transition (from_state, event) -> to_state
-    void add_transition(const std::string& from_state, FSMEvent event, const std::string& to_state);
-
-private:
-    std::map<std::string, std::shared_ptr<BaseState>> states_;
-    std::shared_ptr<BaseState> current_state_;
-    std::shared_ptr<spdlog::logger> logger_;
-
-    // Transition table: (from_state, event) -> to_state
-    std::map<std::pair<std::string, FSMEvent>, std::string> transition_table_;
-
-    // Helper to stringify FSMEvent
-    std::string event_to_string(FSMEvent event) const;
-};
+std::string FSMEngine::event_to_string(FSMEvent event) const {
+    switch (event) {
+        case FSMEvent::RegistrationComplete: return "RegistrationComplete";
+        case FSMEvent::NeighborsMapped: return "NeighborsMapped";
+        case FSMEvent::TopologyStable: return "TopologyStable";
+        case FSMEvent::PolicyApproved: return "PolicyApproved";
+        case FSMEvent::ForwardingActive: return "ForwardingActive";
+        case FSMEvent::TelemetryThreshold: return "TelemetryThreshold";
+        case FSMEvent::ModelUpdated: return "ModelUpdated";
+        case FSMEvent::AnomalyViolation: return "AnomalyViolation";
+        case FSMEvent::FallbackRecovery: return "FallbackRecovery";
+        case FSMEvent::CorrectionApplied: return "CorrectionApplied";
+        case FSMEvent::TrustRevoked: return "TrustRevoked";
+        case FSMEvent::NodeShutdown: return "NodeShutdown";
+        case FSMEvent::ManualOverride: return "ManualOverride";
+        case FSMEvent::ManualReset: return "ManualReset";
+        default: return "Unknown";
+    }
+}
