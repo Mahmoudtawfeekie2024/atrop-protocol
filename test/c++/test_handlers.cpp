@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <string>
 
-// Include the actual handler headers
-#include "daemon/handlers/discovery_handler.hpp"
-#include "daemon/handlers/decision_handler.hpp"
-#include "daemon/handlers/observation_handler.hpp"
-#include "daemon/handlers/correction_handler.hpp"
-#include "daemon/handlers/security_handler.hpp"
-#include "daemon/handlers/exit_handler.hpp"
+// Use local includes since CMake adds daemon/handlers to the include path
+#include "discovery_handler.hpp"
+#include "decision_handler.hpp"
+#include "observation_handler.hpp"
+#include "correction_handler.hpp"
+#include "security_handler.hpp"
+#include "exit_handler.hpp"
 
 TEST(HandlerTest, DiscoveryPacket) {
     std::string input = "test_discovery";
