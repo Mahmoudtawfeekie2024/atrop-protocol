@@ -63,7 +63,11 @@ target_link_libraries(handler_test
 )
 add_test(NAME handler_test COMMAND handler_test)
 
-add_executable(test_fsm test_fsm.cpp ${FSM_SOURCES})
+add_executable(test_fsm
+  test_fsm.cpp
+  ${FSM_SOURCES}
+  ${CMAKE_SOURCE_DIR}/daemon/common/logger.cpp
+)
 target_include_directories(test_fsm PRIVATE ${FSM_INCLUDE_DIRS})
 target_link_libraries(test_fsm
   ${GTEST_LIBRARIES}
