@@ -1,5 +1,3 @@
-// test/c++/test_config_loader.cpp
-
 #include <gtest/gtest.h>
 #include <fstream>
 #include <string>
@@ -94,4 +92,28 @@ TEST_F(ConfigLoaderTest, ThrowsOnNonexistentFile) {
     EXPECT_THROW({
         ConfigLoader::load(test_dir + "not_found.yaml");
     }, std::runtime_error);
+}
+
+// --- New tests for instance API ---
+
+TEST_F(ConfigLoaderTest, InstanceHasAndGetMethodsWork) {
+    ConfigLoader loader(test_dir + "valid.json");
+    EXPECT_TRUE(loader.has("module.port"));
+    EXPECT_TRUE(loader.has("environment.mode"));
+    EXPECT_FALSE(loader.has("nonexistent.key"));
+
+    EXPECT_EQ(loader.get<int>("module.port"), 9090);
+    EXPECT_EQ(loader.get<std::string>("environment.mode"), "prod");
+    EXPECT_EQ(loader.get<std::string>("paths.log_dir"), "/var/log/atrop");
+}
+
+TEST_F(ConfigLoaderTest, InstanceGetThrowsOnMissingKey) {
+    ConfigLoader loader(test_dir + "valid.json");
+    EXPECT_THROW(loader.get<int>("nonexistent.key"), std::out_of_range);
+}
+
+TEST_F(ConfigLoaderTest, InstanceGetThrowsOnWrongType) {
+    ConfigLoader loader(test_dir + "valid.json");
+    // module.port is int, so getting as string should throw
+    EXPECT_THROW(loader.get<std::string>("module.port"), std::bad_variant_access);
 }
