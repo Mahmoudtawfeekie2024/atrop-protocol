@@ -14,7 +14,7 @@ add_subdirectory(test/c++)
 add_subdirectory(test/unit/logger)
 
 # Add control plane executable with sources
-add_executable(control_plane
+add_executable(daemon/control_plane
     daemon/control_plane/main.cpp
     daemon/common/logger.cpp
     daemon/handlers/discovery_handler.cpp
