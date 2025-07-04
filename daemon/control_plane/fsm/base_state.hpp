@@ -2,7 +2,7 @@
 
 #include <string>
 
-// Minimal abstract base class for FSM states
+// Abstract base class for all FSM states
 class BaseState {
 public:
     virtual ~BaseState() = default;
