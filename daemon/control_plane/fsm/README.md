@@ -124,3 +124,64 @@ fsm.transition_to("DISCOVERY");
   - C++ FSM emits telemetry → Python module consumes for model retraining.
 
 *For further details, see the main project [README.md](../README.md) and protocol documentation.*
+
+---
+
+# ATROP FSM Engine
+
+This directory contains the implementation of the ATROP protocol's Finite State Machine (FSM) engine and all core state logic for the control plane.
+
+## Overview
+
+The FSM engine manages the lifecycle and transitions of ATROP control plane nodes, supporting the following states:
+
+- INIT
+- DISCOVERY
+- LEARN
+- DECIDE
+- ENFORCE
+- OBSERVE
+- FEEDBACK
+- CORRECT
+- EXIT
+
+Transitions between these states are event-driven and governed by protocol logic, AI/ML triggers, and configuration parameters.
+
+## Structure
+
+- `fsm_engine.cpp` / `fsm_engine.hpp`: FSM engine core logic, event handling, and transition enforcement.
+- `base_state.cpp` / `base_state.hpp`: Abstract base class for all FSM states.
+- `states/`: Directory containing implementation files for each FSM state:
+  - `init_state.cpp`, `discovery_state.cpp`, `learn_state.cpp`, `decide_state.cpp`, `enforce_state.cpp`, `observe_state.cpp`, `feedback_state.cpp`, `correct_state.cpp`, `exit_state.cpp`
+
+## Transition Logic
+
+- All allowed transitions, triggers, and event sources are documented in [docs/fsm/transitions.md](../../../docs/fsm/transitions.md).
+- The FSM diagram is available at [docs/diagrams/fsm.png](../../../docs/diagrams/fsm.png).
+
+## Invalid Transition Handling
+
+- The FSM engine blocks all invalid transitions.
+- All invalid transition attempts are logged as errors, including the current state, event, and reason for the block.
+
+## Configuration
+
+- Event triggers and thresholds are configurable via the central config loader.
+- See [sdk/c++/config_loader.hpp](../../../sdk/c++/config_loader.hpp) and your config files for details.
+
+## References
+
+- [FSM Transitions Documentation](../../../docs/fsm/transitions.md)
+- [FSM Diagram](../../../docs/diagrams/fsm.png)
+- [Config Loader](../../../sdk/c++/config_loader.hpp)
+- [Logger](../../../daemon/common/logger.hpp)
+
+---
+
+_Last updated: 2025-07-04_
+
+---
+
+**Source:**  
+- [FSM Engine](https://github.com/Mahmoudtawfeekie2024/atrop-protocol/tree/main/daemon/control_plane/fsm)  
+- [FSM Transitions](https://github.com/Mahmoudtawfeekie2024/atrop-protocol/blob/main/docs/fsm/transitions.md)
