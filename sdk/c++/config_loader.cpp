@@ -7,9 +7,9 @@
 #include <stdexcept>
 #include <algorithm>
 #include <iostream>
-
 using json = nlohmann::json;
 
+// --- Internal helpers (unchanged) ---
 static void apply_defaults(std::map<std::string, ConfigValue>& config) {
     auto get_or = [&](const std::string& key, ConfigValue fallback) {
         return config.count(key) ? config[key] : fallback;
@@ -35,6 +35,7 @@ static void validate_required_fields(const std::map<std::string, ConfigValue>& c
     }
 }
 
+// --- Static method (backward compatible) ---
 std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepath) {
     std::map<std::string, ConfigValue> config;
     std::ifstream file(filepath);
@@ -85,4 +86,14 @@ std::map<std::string, ConfigValue> ConfigLoader::load(const std::string& filepat
     validate_required_fields(config);
     std::cout << "[CONFIG] Successfully loaded and validated: " << filepath << std::endl;
     return config;
+}
+
+// --- New: Instance constructor ---
+ConfigLoader::ConfigLoader(const std::string& filepath) {
+    config_ = ConfigLoader::load(filepath);
+}
+
+// --- New: has(key) ---
+bool ConfigLoader::has(const std::string& key) const {
+    return config_.count(key) > 0;
 }
