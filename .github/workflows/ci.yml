@@ -305,3 +305,32 @@ jobs:
           mkdir -p build && cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           ctest -N
+
+  cpp-handler-test:
+    runs-on: ubuntu-latest
+    needs: [cpp-test, python-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt update && sudo apt install -y build-essential cmake g++ make
+
+      - name: Install dependencies via vcpkg
+        run: |
+          rm -rf vcpkg
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install gtest
+
+      - name: Build handler tests
+        run: |
+          mkdir -p build-handler
+          cd build-handler
+          cmake ../test/unit/c++ -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+          make handler_test
+
+      - name: Run handler tests
+        run: |
+          cd build-handler
+          ./handler_test
