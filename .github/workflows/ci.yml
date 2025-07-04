@@ -307,6 +307,7 @@ jobs:
           ctest -N
 
   cpp-handler-test:
+    name: 🧪 C++ Handler Tests
     runs-on: ubuntu-latest
     needs: [cpp-test, python-test]
     steps:
@@ -316,21 +317,22 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y build-essential cmake g++ make
 
-      - name: Install dependencies via vcpkg
+      - name: Setup vcpkg and install dependencies
         run: |
           rm -rf vcpkg
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install gtest
+          ./vcpkg/vcpkg install spdlog gtest yaml-cpp nlohmann-json
+          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
 
-      - name: Build handler tests
+      - name: Build and run C++ handler tests
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
         run: |
-          mkdir -p build-handler
-          cd build-handler
-          cmake ../test/unit/c++ -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+          mkdir -p build && cd build
+          cmake ../../test/c++ -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make handler_test
-
-      - name: Run handler tests
-        run: |
-          cd build-handler
-          ./handler_test
+          ctest --output-on-failure -R handler_test
