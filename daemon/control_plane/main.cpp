@@ -2,9 +2,10 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>     // From: atrop/common/config_loader.*
-#include "logger.hpp"            // From: atrop/common/logger.*
-#include "discovery_handler.hpp" // Newly added for Discovery packet handling
+#include <config_loader.hpp>
+#include "logger.hpp"
+#include "discovery_handler.hpp"
+#include "decision_handler.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -60,6 +61,9 @@ int main() {
 
     // Simulate receiving a Discovery packet (stub)
     handleDiscoveryPacket("DISCOVERY_PACKET_PLACEHOLDER");
+
+    // Simulate receiving a Decision packet (stub)
+    handleDecisionPacket("DECISION_PACKET_PLACEHOLDER");
 
     // TODO: Start gRPC server, FSM, etc.
     return 0;
