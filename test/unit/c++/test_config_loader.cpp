@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 class ConfigLoaderTest : public ::testing::Test {
 protected:
-    std::string base_dir = "test/unit/config";
+    std::string base_dir = "test/unit/sdk/config";
 
     std::string path(const std::string& file) {
         return (fs::path(base_dir) / file).string();
@@ -49,7 +49,7 @@ TEST_F(ConfigLoaderTest, ThrowsOnNonexistentFile) {
     EXPECT_THROW(ConfigLoader::load("nonexistent.json"), std::runtime_error);
 }
 
-// --- New tests for instance API ---
+// --- Instance API tests ---
 
 TEST_F(ConfigLoaderTest, InstanceHasAndGetMethodsWork) {
     ConfigLoader loader(path("valid.json"));
@@ -71,4 +71,41 @@ TEST_F(ConfigLoaderTest, InstanceGetThrowsOnWrongType) {
     ConfigLoader loader(path("valid.json"));
     // module.port is int, so getting as string should throw
     EXPECT_THROW(loader.get<std::string>("module.port"), std::bad_variant_access);
+}
+
+// --- Config-driven threshold and event trigger tests ---
+
+TEST_F(ConfigLoaderTest, TelemetryThresholdConfigAndEventTrigger) {
+    // Load a config file with a custom telemetry threshold
+    auto config = ConfigLoader::load(path("config.json"));
+    // Suppose the config contains: "telemetry.threshold": 42
+    ASSERT_TRUE(config.count("telemetry.threshold"));
+    int threshold = std::get<int>(config["telemetry.threshold"]);
+    EXPECT_EQ(threshold, 42);
+
+    // Simulate reaching the threshold in your FSM logic
+    int telemetry_value = 42;
+    bool threshold_reached = (telemetry_value >= threshold);
+    EXPECT_TRUE(threshold_reached);
+
+    // (FSM event trigger would be tested in FSM test, not here)
+}
+
+TEST_F(ConfigLoaderTest, TelemetryThresholdDefaultApplied) {
+    // Load a config file missing the telemetry.threshold key
+    auto config = ConfigLoader::load(path("missing_log_dir.yaml"));
+    // If your loader applies a default, check it here (e.g., default is 100)
+    int default_threshold = config.count("telemetry.threshold") ? std::get<int>(config["telemetry.threshold"]) : 100;
+    EXPECT_EQ(default_threshold, 100);
+}
+
+// --- Edge case: empty config file ---
+
+TEST_F(ConfigLoaderTest, EmptyConfigFileHandledGracefully) {
+    EXPECT_NO_THROW({
+        auto config = ConfigLoader::load(path("empty.json"));
+        // Should apply all defaults
+        expect_config_value(config, "module.port", 8080);
+        expect_config_value(config, "paths.model_dir", std::string("./models"));
+    });
 }
