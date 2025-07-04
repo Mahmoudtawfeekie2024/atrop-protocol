@@ -336,3 +336,29 @@ jobs:
           cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
           make handler_test
           ctest --output-on-failure -R handler_test
+  
+  fsm-test:
+    name: 🧪 FSM C++ Tests
+    runs-on: ubuntu-latest
+    needs: [cpp-test, python-test]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup vcpkg and install dependencies
+        run: |
+          rm -rf vcpkg
+          git clone https://github.com/microsoft/vcpkg.git
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install spdlog gtest yaml-cpp nlohmann-json
+          echo "VCPKG_ROOT=$(pwd)/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_TOOLCHAIN_FILE=$(pwd)/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "CMAKE_PREFIX_PATH=$(pwd)/vcpkg/installed/x64-linux/share" >> $GITHUB_ENV
+      - name: Build and run FSM tests
+        env:
+          VCPKG_TOOLCHAIN_FILE: ${{ env.VCPKG_TOOLCHAIN_FILE }}
+          CMAKE_PREFIX_PATH: ${{ env.CMAKE_PREFIX_PATH }}
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_TOOLCHAIN_FILE -DCMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH
+          make test_fsm
+          ctest --output-on-failure -R test_fsm
