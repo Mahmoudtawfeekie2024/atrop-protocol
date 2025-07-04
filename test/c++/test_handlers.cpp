@@ -1,18 +1,17 @@
 #include <gtest/gtest.h>
 #include <string>
 
-// Handler function declarations (adjust includes as needed)
-std::string handleDiscoveryPacket(const std::string& input);
-std::string handleDecisionPacket(const std::string& input);
-std::string handleObservationPacket(const std::string& input);
-std::string handleCorrectionPacket(const std::string& input);
-std::string handleSecurityPacket(const std::string& input);
-std::string handleExitPacket(const std::string& input);
+// Include the actual handler headers
+#include "daemon/handlers/discovery_handler.hpp"
+#include "daemon/handlers/decision_handler.hpp"
+#include "daemon/handlers/observation_handler.hpp"
+#include "daemon/handlers/correction_handler.hpp"
+#include "daemon/handlers/security_handler.hpp"
+#include "daemon/handlers/exit_handler.hpp"
 
 TEST(HandlerTest, DiscoveryPacket) {
     std::string input = "test_discovery";
     auto result = handleDiscoveryPacket(input);
-    // Adjust expected value as per your handler logic
     EXPECT_FALSE(result.empty());
 }
 
