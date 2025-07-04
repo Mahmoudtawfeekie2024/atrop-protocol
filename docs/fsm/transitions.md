@@ -1,15 +1,3 @@
-Certainly! Here is the full, integrated docs/fsm/transitions.md file, including:
-
-- The comprehensive state transition table
-- Event/trigger breakdown with internal/external/config-driven classification
-- FSM flowchart
-- Per-state event handler stubs
-- A clear plan for handling invalid transitions (logging, error handling)
-- Implementation notes and references
-
----
-
-```markdown
 # ATROP FSM State Transitions
 
 This document defines all valid state transitions, event triggers, and implementation notes for the ATROP protocol control plane FSM.
