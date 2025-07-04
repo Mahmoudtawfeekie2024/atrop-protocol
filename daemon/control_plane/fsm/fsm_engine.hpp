@@ -6,7 +6,6 @@
 #include "base_state.hpp"
 #include <spdlog/spdlog.h>
 
-// --- FSMEvent Enum Definition ---
 enum class FSMEvent {
     RegistrationComplete,
     NeighborsMapped,
@@ -24,7 +23,6 @@ enum class FSMEvent {
     ManualReset
 };
 
-// --- FSMEngine Class Definition ---
 class FSMEngine {
 public:
     explicit FSMEngine(std::shared_ptr<spdlog::logger> logger);
@@ -36,6 +34,10 @@ public:
 
     // Utility: Convert FSMEvent to string
     static std::string event_to_string(FSMEvent event);
+
+    // --- Add these for testing ---
+    std::string current_state_name() const;
+    bool transition_to(const std::string& state_name);
 
 private:
     std::map<std::string, std::shared_ptr<BaseState>> states_;
