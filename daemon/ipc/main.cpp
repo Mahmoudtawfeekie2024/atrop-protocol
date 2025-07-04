@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <string>
-#include <config_loader.hpp>  // Clean, thanks to target_include_directories
+#include <config_loader.hpp>
+#include "discovery_handler.hpp" // Newly added for Discovery packet handling
 
 int main() {
     std::cout << "ATROP IPC Daemon starting..." << std::endl;
@@ -20,6 +21,9 @@ int main() {
         std::cerr << "[CONFIG] Error loading config: " << e.what() << std::endl;
         return 1;
     }
+
+    // Simulate receiving a Discovery packet (stub)
+    handleDiscoveryPacket("DISCOVERY_PACKET_PLACEHOLDER");
 
     // TODO: Start IPC interface, queue handlers, etc.
     return 0;
