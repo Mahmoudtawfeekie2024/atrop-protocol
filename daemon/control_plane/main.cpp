@@ -1,5 +1,3 @@
-// daemon/control_plane/main.cpp
-
 #include <iostream>
 #include <string>
 #include <config_loader.hpp>
@@ -9,6 +7,7 @@
 #include "observation_handler.hpp"
 #include "correction_handler.hpp"
 #include "security_handler.hpp"
+#include "exit_handler.hpp"
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -76,6 +75,9 @@ int main() {
 
     // Simulate receiving a Security packet (stub)
     handleSecurityPacket("SECURITY_PACKET_PLACEHOLDER");
+
+    // Simulate receiving an Exit packet (stub)
+    handleExitPacket("EXIT_PACKET_PLACEHOLDER");
 
     // TODO: Start gRPC server, FSM, etc.
     return 0;
