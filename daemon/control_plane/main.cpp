@@ -3,7 +3,8 @@
 #include <iostream>
 #include <string>
 #include <config_loader.hpp>     // From: atrop/common/config_loader.*
-#include "logger.hpp"           // From: atrop/common/logger.*
+#include "logger.hpp"            // From: atrop/common/logger.*
+#include "discovery_handler.hpp" // Newly added for Discovery packet handling
 
 int main() {
     std::cout << "ATROP Control Plane Daemon starting..." << std::endl;
@@ -56,6 +57,9 @@ int main() {
         }
         return 1;
     }
+
+    // Simulate receiving a Discovery packet (stub)
+    handleDiscoveryPacket("DISCOVERY_PACKET_PLACEHOLDER");
 
     // TODO: Start gRPC server, FSM, etc.
     return 0;
