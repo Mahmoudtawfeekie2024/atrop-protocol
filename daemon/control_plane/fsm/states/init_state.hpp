@@ -2,10 +2,10 @@
 
 #include "../base_state.hpp"
 #include <memory>
-#include <string>
-#include <spdlog/spdlog.h>
+#include <spdlog/logger.h>
 
-// INIT state for the ATROP FSM
+// Initialization State for ATROP FSM
+// Handles entry and exit logic for the INIT state.
 class InitState : public BaseState {
 public:
     explicit InitState(std::shared_ptr<spdlog::logger> logger);
