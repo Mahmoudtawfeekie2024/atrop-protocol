@@ -3,7 +3,8 @@
 #include <iostream>
 #include <string>
 #include <config_loader.hpp>
-#include "discovery_handler.hpp" // Newly added for Discovery packet handling
+#include "discovery_handler.hpp"
+#include "decision_handler.hpp"
 
 int main() {
     std::cout << "ATROP IPC Daemon starting..." << std::endl;
@@ -24,6 +25,9 @@ int main() {
 
     // Simulate receiving a Discovery packet (stub)
     handleDiscoveryPacket("DISCOVERY_PACKET_PLACEHOLDER");
+
+    // Simulate receiving a Decision packet (stub)
+    handleDecisionPacket("DECISION_PACKET_PLACEHOLDER");
 
     // TODO: Start IPC interface, queue handlers, etc.
     return 0;
