@@ -17,6 +17,16 @@ set(FSM_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/daemon/control_plane
 )
 
+# FSM sources for test_fsm
+set(FSM_SOURCES
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/base_state.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/fsm_engine.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/states/init_state.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/states/discovery_state.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/states/decide_state.cpp
+    ${CMAKE_SOURCE_DIR}/daemon/control_plane/fsm/states/exit_state.cpp
+)
+
 add_executable(test_sample test_sample.cpp)
 target_include_directories(test_sample PRIVATE ${FSM_INCLUDE_DIRS})
 target_link_libraries(test_sample
@@ -53,11 +63,13 @@ target_link_libraries(handler_test
 )
 add_test(NAME handler_test COMMAND handler_test)
 
-add_executable(test_fsm test_fsm.cpp)
+add_executable(test_fsm test_fsm.cpp ${FSM_SOURCES})
 target_include_directories(test_fsm PRIVATE ${FSM_INCLUDE_DIRS})
 target_link_libraries(test_fsm
   ${GTEST_LIBRARIES}
   GTest::gtest_main
   pthread
+  spdlog::spdlog
+  fmt::fmt
 )
 add_test(NAME test_fsm COMMAND test_fsm)
