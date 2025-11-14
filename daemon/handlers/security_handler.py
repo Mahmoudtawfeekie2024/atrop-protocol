@@ -1,6 +1,6 @@
 # daemon/ipc/security_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_security_packet(raw_packet):
     """

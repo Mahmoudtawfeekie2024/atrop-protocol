@@ -1,6 +1,6 @@
 # daemon/ipc/correction_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_correction_packet(raw_packet):
     """

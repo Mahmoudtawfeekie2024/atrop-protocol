@@ -1,6 +1,6 @@
 # daemon/ipc/decision_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_decision_packet(raw_packet):
     """

@@ -1,6 +1,23 @@
+import json
 import logging
 from logging.handlers import RotatingFileHandler
-from pythonjsonlogger import jsonlogger
+
+
+class _JsonFormatter(logging.Formatter):
+    """Minimal JSON formatter to avoid external dependencies."""
+
+    def format(self, record: logging.LogRecord) -> str:  # pragma: no cover - trivial
+        payload = {
+            "asctime": self.formatTime(record, self.datefmt),
+            "levelname": record.levelname,
+            "name": record.name,
+            "message": record.getMessage(),
+        }
+
+        if record.exc_info:
+            payload["exc_info"] = self.formatException(record.exc_info)
+
+        return json.dumps(payload)
 
 def setup_logger(name: str, config: dict = None) -> logging.Logger:
     log_level = config.get("level", "INFO") if config else "INFO"
@@ -18,7 +35,7 @@ def setup_logger(name: str, config: dict = None) -> logging.Logger:
         logger.handlers.clear()
 
     if log_format == "json":
-        formatter = jsonlogger.JsonFormatter('%(asctime)s %(levelname)s %(name)s %(message)s')
+        formatter = _JsonFormatter()
     else:
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
