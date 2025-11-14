@@ -1,6 +1,6 @@
 # daemon/ipc/discovery_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_discovery_packet(raw_packet):
     """

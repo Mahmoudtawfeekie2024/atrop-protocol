@@ -1,6 +1,6 @@
 # daemon/ipc/exit_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_exit_packet(raw_packet):
     """

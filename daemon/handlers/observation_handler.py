@@ -1,6 +1,6 @@
 # daemon/ipc/observation_handler.py
 
-from logger import setup_logger
+from ..logger import setup_logger
 
 def handle_observation_packet(raw_packet):
     """
