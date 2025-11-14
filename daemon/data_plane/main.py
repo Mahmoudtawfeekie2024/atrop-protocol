@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""
-main.py - ATROP Data Plane Entrypoint
-Description: Launches the ATROP ML inference loop for per-flow forwarding decisions.
-Future: Argument parsing, model load trigger, and telemetry hooks.
-"""
+"""ATROP data plane entrypoint used by the unit tests."""
+
+import sys
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SDK_SRC = REPO_ROOT / "sdk" / "python" / "src"
+if str(SDK_SRC) not in sys.path:
+    sys.path.insert(0, str(SDK_SRC))
 
 from atrop_sdk.config_loader import load_config, ConfigLoaderError
 
